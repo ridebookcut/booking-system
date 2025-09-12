@@ -301,6 +301,7 @@
             <div class="section">
                 <h3>Pending Bookings</h3>
                 <div id="adminPanelNotification"></div>
+                <button class="btn" onclick="refreshAdminData()" style="margin-bottom: 15px;">🔄 Refresh Data</button>
                 <div id="pendingBookings">
                     <!-- Pending bookings will be loaded here -->
                 </div>
@@ -372,13 +373,13 @@
             }
         }
         
-        // Start real-time synchronization
+        // Start real-time synchronization - LESS AGGRESSIVE
         function startRealTimeSync() {
             setInterval(async () => {
                 if (isOnline) {
                     await loadFromServer();
                 }
-            }, 5000); // Check every 5 seconds
+            }, 10000); // Check every 10 seconds instead of 5
         }
         
         // Load data from local storage
@@ -392,7 +393,7 @@
             }
         }
         
-        // Load data from server (Google Sheets)
+        // Load data from server (Google Sheets) - FIXED VERSION
         async function loadFromServer() {
             try {
                 const response = await fetch(`${SHEET_URL}?action=get`);
@@ -402,14 +403,41 @@
                     
                     if (data && data.bookings) {
                         const oldData = JSON.stringify(bookingsData);
-                        bookingsData = data.bookings;
                         
-                        // Save to local storage
+                        // Smart merge: Keep recent local bookings, sync older ones from server
+                        const serverBookings = data.bookings;
+                        const now = new Date().getTime();
+                        
+                        // Start with server data
+                        const mergedBookings = { ...serverBookings };
+                        
+                        // Keep any local bookings that are less than 60 seconds old
+                        Object.keys(bookingsData).forEach(date => {
+                            if (bookingsData[date]) {
+                                Object.keys(bookingsData[date]).forEach(time => {
+                                    const localBooking = bookingsData[date][time];
+                                    if (localBooking && localBooking.timestamp) {
+                                        const bookingTime = new Date(localBooking.timestamp).getTime();
+                                        
+                                        // If booking is less than 60 seconds old, keep local version
+                                        if (now - bookingTime < 60000) {
+                                            if (!mergedBookings[date]) mergedBookings[date] = {};
+                                            mergedBookings[date][time] = localBooking;
+                                            console.log('🔄 Protecting recent booking:', localBooking.customerName);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        
+                        bookingsData = mergedBookings;
+                        
+                        // Save merged data to local storage
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
                         
                         // Only refresh UI if data actually changed
                         if (oldData !== JSON.stringify(bookingsData)) {
-                            console.log('📡 Synced from server - updating display');
+                            console.log('📡 Synced from server - protecting recent bookings');
                             
                             // Refresh current view
                             if (selectedDate) {
@@ -577,8 +605,10 @@
             
             loadTimeSlots();
             
-            // Force immediate server check
-            setTimeout(loadFromServer, 2000);
+            // Delay server check to give time for booking to settle
+            setTimeout(async () => {
+                await saveToServer();
+            }, 3000);
         }
         
         // Cancel booking
@@ -616,7 +646,7 @@
             }
         }
         
-        // Admin login with on-page notifications
+        // Admin login with proper data loading
         function adminLogin() {
             const password = document.getElementById('adminPassword').value;
             
@@ -625,27 +655,45 @@
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
                 document.getElementById('adminPassword').value = '';
-                showNotification('adminPanelNotification', '✅ Login successful! Welcome to the admin panel.', 'success');
-                loadAdminBookings();
+                
+                // Force reload data from localStorage before showing admin panel
+                loadFromLocalStorage();
+                
+                showNotification('adminPanelNotification', '✅ Login successful! Loading bookings...', 'success');
+                
+                // Load admin bookings after a short delay to ensure data is loaded
+                setTimeout(() => {
+                    loadAdminBookings();
+                }, 500);
             } else {
                 showNotification('adminNotification', '❌ Incorrect password. Please try again.', 'error');
                 document.getElementById('adminPassword').value = '';
             }
         }
         
-        // Load admin bookings
+        // Load admin bookings with debugging
         function loadAdminBookings() {
+            console.log('👥 Loading admin bookings, current data:', bookingsData);
+            
             const allBookings = [];
             
             // Collect all bookings
             Object.keys(bookingsData).forEach(date => {
-                Object.keys(bookingsData[date]).forEach(time => {
-                    allBookings.push(bookingsData[date][time]);
-                });
+                if (bookingsData[date]) {
+                    Object.keys(bookingsData[date]).forEach(time => {
+                        if (bookingsData[date][time]) {
+                            allBookings.push(bookingsData[date][time]);
+                        }
+                    });
+                }
             });
+            
+            console.log('📅 Total bookings found:', allBookings.length);
             
             // Filter pending bookings
             const pendingBookings = allBookings.filter(booking => booking.status === 'pending');
+            
+            console.log('⏳ Pending bookings:', pendingBookings.length);
             
             // Sort by date and time
             allBookings.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
@@ -654,7 +702,7 @@
             // Display pending bookings
             const pendingContainer = document.getElementById('pendingBookings');
             if (pendingBookings.length === 0) {
-                pendingContainer.innerHTML = '<p>No pending bookings.</p>';
+                pendingContainer.innerHTML = '<p>No pending bookings found.</p><p><small>Debug: Total bookings in system: ' + allBookings.length + '</small></p>';
             } else {
                 pendingContainer.innerHTML = pendingBookings.map(booking => `
                     <div class="booking-item">
@@ -689,6 +737,14 @@
                     </div>
                 `).join('');
             }
+        }
+        
+        // Manual refresh function for debugging
+        function refreshAdminData() {
+            console.log('🔄 Manual refresh requested');
+            loadFromLocalStorage();
+            loadAdminBookings();
+            showNotification('adminPanelNotification', '🔄 Data refreshed!', 'info');
         }
         
         // Confirm booking
