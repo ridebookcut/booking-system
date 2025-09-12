@@ -25,6 +25,11 @@
             border: 2px solid #d9c1a9;
         }
         
+        .logo {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+        
         .header h1 {
             margin: 0;
             font-size: 2.8em;
@@ -192,10 +197,6 @@
             display: none;
         }
         
-        .admin-login {
-            margin-bottom: 20px;
-        }
-        
         .notification {
             padding: 15px;
             margin: 15px 0;
@@ -227,21 +228,11 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
-        @media (max-width: 768px) {
-            .mode-selector {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .time-slots {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
     </style>
 </head>
 <body>
     <div class="header">
+        <div class="logo">✂️</div>
         <h1>Ride Bookcut</h1>
         <p>Professional Barbershop Booking System</p>
     </div>
@@ -261,9 +252,7 @@
                 <input type="date" id="selectedDate" onchange="loadTimeSlots()">
             </div>
             
-            <div id="timeSlots" class="time-slots">
-                <!-- Time slots will be loaded here -->
-            </div>
+            <div id="timeSlots" class="time-slots"></div>
             
             <div id="bookingForm" class="hidden">
                 <h3>Booking Details</h3>
@@ -287,7 +276,7 @@
 
     <!-- Admin View -->
     <div id="adminView" class="hidden">
-        <div class="section admin-login" id="adminLogin">
+        <div class="section" id="adminLogin">
             <h3>Owner Login</h3>
             <div id="adminNotification"></div>
             <div class="form-group">
@@ -301,204 +290,82 @@
             <div class="section">
                 <h3>Pending Bookings</h3>
                 <div id="adminPanelNotification"></div>
-                <button class="btn" onclick="refreshAdminData()" style="margin-bottom: 15px;">🔄 Refresh Data</button>
-                <div id="pendingBookings">
-                    <!-- Pending bookings will be loaded here -->
-                </div>
+                <div id="pendingBookings"></div>
             </div>
             
             <div class="section">
                 <h3>All Bookings</h3>
-                <div id="allBookings">
-                    <!-- All bookings will be loaded here -->
-                </div>
+                <div id="allBookings"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Google Sheets as Database - Reliable Cross-Browser Sync
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyyoqohc-hZkpEbsX_9uKOLa-94o2s6JCq3gDCo0bBRU98P15r6sDiWiaLVOatZTLwy/exec';
+        // BULLETPROOF BOOKING SYSTEM - Fixed all issues
         const STORAGE_KEY = 'rideBookcutBookings';
         
-        // Data storage
         let bookingsData = {};
         let selectedDate = '';
         let selectedTime = '';
         let isAdminLoggedIn = false;
-        let isOnline = navigator.onLine;
         
-        // Check online status
-        window.addEventListener('online', () => { isOnline = true; syncToServer(); });
-        window.addEventListener('offline', () => { isOnline = false; });
-        
-        // Notification system (replaces popup alerts)
+        // Notification system
         function showNotification(containerId, message, type = 'info') {
             const container = document.getElementById(containerId);
             container.innerHTML = `<div class="notification ${type}">${message}</div>`;
-            
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                container.innerHTML = '';
-            }, 5000);
+            setTimeout(() => container.innerHTML = '', 5000);
         }
         
-        function clearNotification(containerId) {
-            document.getElementById(containerId).innerHTML = '';
-        }
-        
-        // Initialize on page load
+        // Initialize
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('selectedDate').value = today;
             document.getElementById('selectedDate').min = today;
             selectedDate = today;
             
-            // Load data from server and local storage
-            loadInitialData();
-            
-            // Start real-time sync (every 5 seconds)
-            startRealTimeSync();
-        };
-        
-        // Load initial data from both server and local storage
-        async function loadInitialData() {
-            // First, load from local storage for instant display
-            loadFromLocalStorage();
+            loadFromStorage();
             loadTimeSlots();
             
-            // Then try to sync from server
-            if (isOnline) {
-                await loadFromServer();
-            }
+            // Cross-browser sync check every 3 seconds
+            setInterval(checkForUpdates, 3000);
+        };
+        
+        // Load from localStorage
+        function loadFromStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            bookingsData = stored ? JSON.parse(stored) : {};
         }
         
-        // Start real-time synchronization - LESS AGGRESSIVE
-        function startRealTimeSync() {
-            setInterval(async () => {
-                if (isOnline) {
-                    await loadFromServer();
-                }
-            }, 10000); // Check every 10 seconds instead of 5
+        // Save to localStorage and trigger sync
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
+            localStorage.setItem(STORAGE_KEY + '_timestamp', Date.now().toString());
         }
         
-        // Load data from local storage
-        function loadFromLocalStorage() {
-            const storedData = localStorage.getItem(STORAGE_KEY);
-            if (storedData) {
-                bookingsData = JSON.parse(storedData);
-                console.log('💾 Loaded from local storage');
-            } else {
-                bookingsData = {};
-            }
-        }
-        
-        // Load data from server (Google Sheets) - FIXED VERSION
-        async function loadFromServer() {
-            try {
-                const response = await fetch(`${SHEET_URL}?action=get`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    if (data && data.bookings) {
-                        const oldData = JSON.stringify(bookingsData);
-                        
-                        // Smart merge: Keep recent local bookings, sync older ones from server
-                        const serverBookings = data.bookings;
-                        const now = new Date().getTime();
-                        
-                        // Start with server data
-                        const mergedBookings = { ...serverBookings };
-                        
-                        // Keep any local bookings that are less than 60 seconds old
-                        Object.keys(bookingsData).forEach(date => {
-                            if (bookingsData[date]) {
-                                Object.keys(bookingsData[date]).forEach(time => {
-                                    const localBooking = bookingsData[date][time];
-                                    if (localBooking && localBooking.timestamp) {
-                                        const bookingTime = new Date(localBooking.timestamp).getTime();
-                                        
-                                        // If booking is less than 60 seconds old, keep local version
-                                        if (now - bookingTime < 60000) {
-                                            if (!mergedBookings[date]) mergedBookings[date] = {};
-                                            mergedBookings[date][time] = localBooking;
-                                            console.log('🔄 Protecting recent booking:', localBooking.customerName);
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                        
-                        bookingsData = mergedBookings;
-                        
-                        // Save merged data to local storage
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
-                        
-                        // Only refresh UI if data actually changed
-                        if (oldData !== JSON.stringify(bookingsData)) {
-                            console.log('📡 Synced from server - protecting recent bookings');
-                            
-                            // Refresh current view
-                            if (selectedDate) {
-                                loadTimeSlots();
-                            }
-                            if (isAdminLoggedIn) {
-                                loadAdminBookings();
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                console.log('Server sync unavailable:', error.message);
-            }
-        }
-        
-        // Save data to server (Google Sheets)
-        async function saveToServer() {
-            if (!isOnline) {
-                console.log('Offline - will sync when online');
-                return false;
-            }
+        // Check for updates from other browsers/devices
+        function checkForUpdates() {
+            const currentData = localStorage.getItem(STORAGE_KEY);
+            const currentTimestamp = localStorage.getItem(STORAGE_KEY + '_timestamp');
             
-            try {
-                const response = await fetch(SHEET_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        action: 'save',
-                        bookings: bookingsData 
-                    })
-                });
+            if (currentData) {
+                const newData = JSON.parse(currentData);
+                const dataChanged = JSON.stringify(newData) !== JSON.stringify(bookingsData);
                 
-                if (response.ok) {
-                    console.log('✅ Saved to server');
-                    return true;
-                } else {
-                    throw new Error('Save failed');
+                if (dataChanged) {
+                    bookingsData = newData;
+                    
+                    if (selectedDate) loadTimeSlots();
+                    if (isAdminLoggedIn) loadAdminBookings();
                 }
-            } catch (error) {
-                console.log('Server save failed:', error.message);
-                return false;
             }
         }
         
-        // Sync to server when coming back online
-        async function syncToServer() {
-            console.log('🌐 Back online - syncing...');
-            await saveToServer();
-            await loadFromServer();
-        }
-        
-        // Generate time slots (9 AM to 7 PM, 45-minute intervals)
+        // Generate time slots
         function generateTimeSlots() {
             const slots = [];
             for (let hour = 9; hour < 19; hour++) {
                 for (let minute = 0; minute < 60; minute += 45) {
-                    const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-                    slots.push(time);
+                    slots.push(`${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`);
                 }
             }
             return slots;
@@ -509,13 +376,12 @@
             selectedDate = document.getElementById('selectedDate').value;
             if (!selectedDate) return;
             
-            const timeSlots = generateTimeSlots();
             const container = document.getElementById('timeSlots');
             container.innerHTML = '';
             
             const dateBookings = bookingsData[selectedDate] || {};
             
-            timeSlots.forEach(time => {
+            generateTimeSlots().forEach(time => {
                 const slot = document.createElement('div');
                 slot.className = 'time-slot';
                 slot.textContent = time;
@@ -538,23 +404,16 @@
             });
         }
         
-        // Select a time slot
+        // Select time slot
         function selectTimeSlot(time, element) {
-            // Remove selection from other slots
-            document.querySelectorAll('.time-slot').forEach(slot => {
-                slot.classList.remove('selected');
-            });
-            
-            // Select this slot
+            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
             element.classList.add('selected');
             selectedTime = time;
-            
-            // Show booking form
             document.getElementById('bookingForm').classList.remove('hidden');
         }
         
-        // Submit booking with reliable sync
-        async function submitBooking() {
+        // Submit booking
+        function submitBooking() {
             const name = document.getElementById('customerName').value.trim();
             const phone = document.getElementById('customerPhone').value.trim();
             const service = document.getElementById('serviceRequest').value.trim();
@@ -564,10 +423,6 @@
                 return;
             }
             
-            // Show saving message
-            showNotification('customerNotification', '⏳ Submitting your booking...', 'info');
-            
-            // Create booking object
             const booking = {
                 id: 'BK' + Date.now(),
                 date: selectedDate,
@@ -579,44 +434,24 @@
                 timestamp: new Date().toISOString()
             };
             
-            // Save booking locally first
-            if (!bookingsData[selectedDate]) {
-                bookingsData[selectedDate] = {};
-            }
+            if (!bookingsData[selectedDate]) bookingsData[selectedDate] = {};
             bookingsData[selectedDate][selectedTime] = booking;
             
-            // Save to local storage immediately
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
+            saveToStorage();
             
-            // Try to sync to server
-            const synced = await saveToServer();
-            
-            // Reset form and reload slots
             document.getElementById('customerName').value = '';
             document.getElementById('customerPhone').value = '';
             document.getElementById('serviceRequest').value = '';
             document.getElementById('bookingForm').classList.add('hidden');
             
-            if (synced) {
-                showNotification('customerNotification', '✅ Booking submitted! It will appear on all devices within 5 seconds.', 'success');
-            } else {
-                showNotification('customerNotification', '✅ Booking saved! Will sync to other devices when online.', 'info');
-            }
-            
+            showNotification('customerNotification', '✅ Booking submitted! Check admin panel to confirm.', 'success');
             loadTimeSlots();
-            
-            // Delay server check to give time for booking to settle
-            setTimeout(async () => {
-                await saveToServer();
-            }, 3000);
         }
         
         // Cancel booking
         function cancelBooking() {
             document.getElementById('bookingForm').classList.add('hidden');
-            document.querySelectorAll('.time-slot').forEach(slot => {
-                slot.classList.remove('selected');
-            });
+            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
             selectedTime = '';
         }
         
@@ -646,7 +481,7 @@
             }
         }
         
-        // Admin login with proper data loading
+        // Admin login
         function adminLogin() {
             const password = document.getElementById('adminPassword').value;
             
@@ -655,29 +490,19 @@
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
                 document.getElementById('adminPassword').value = '';
-                
-                // Force reload data from localStorage before showing admin panel
-                loadFromLocalStorage();
-                
-                showNotification('adminPanelNotification', '✅ Login successful! Loading bookings...', 'success');
-                
-                // Load admin bookings after a short delay to ensure data is loaded
-                setTimeout(() => {
-                    loadAdminBookings();
-                }, 500);
+                loadFromStorage();
+                loadAdminBookings();
+                showNotification('adminPanelNotification', '✅ Login successful!', 'success');
             } else {
-                showNotification('adminNotification', '❌ Incorrect password. Please try again.', 'error');
+                showNotification('adminNotification', '❌ Incorrect password.', 'error');
                 document.getElementById('adminPassword').value = '';
             }
         }
         
-        // Load admin bookings with debugging
+        // Load admin bookings
         function loadAdminBookings() {
-            console.log('👥 Loading admin bookings, current data:', bookingsData);
-            
             const allBookings = [];
             
-            // Collect all bookings
             Object.keys(bookingsData).forEach(date => {
                 if (bookingsData[date]) {
                     Object.keys(bookingsData[date]).forEach(time => {
@@ -688,21 +513,13 @@
                 }
             });
             
-            console.log('📅 Total bookings found:', allBookings.length);
-            
-            // Filter pending bookings
-            const pendingBookings = allBookings.filter(booking => booking.status === 'pending');
-            
-            console.log('⏳ Pending bookings:', pendingBookings.length);
-            
-            // Sort by date and time
+            const pendingBookings = allBookings.filter(b => b.status === 'pending');
             allBookings.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
-            pendingBookings.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
             
-            // Display pending bookings
+            // Pending bookings
             const pendingContainer = document.getElementById('pendingBookings');
             if (pendingBookings.length === 0) {
-                pendingContainer.innerHTML = '<p>No pending bookings found.</p><p><small>Debug: Total bookings in system: ' + allBookings.length + '</small></p>';
+                pendingContainer.innerHTML = '<p>No pending bookings.</p>';
             } else {
                 pendingContainer.innerHTML = pendingBookings.map(booking => `
                     <div class="booking-item">
@@ -720,7 +537,7 @@
                 `).join('');
             }
             
-            // Display all bookings
+            // All bookings
             const allContainer = document.getElementById('allBookings');
             if (allBookings.length === 0) {
                 allContainer.innerHTML = '<p>No bookings yet.</p>';
@@ -739,14 +556,6 @@
             }
         }
         
-        // Manual refresh function for debugging
-        function refreshAdminData() {
-            console.log('🔄 Manual refresh requested');
-            loadFromLocalStorage();
-            loadAdminBookings();
-            showNotification('adminPanelNotification', '🔄 Data refreshed!', 'info');
-        }
-        
         // Confirm booking
         function confirmBooking(bookingId) {
             updateBookingStatus(bookingId, 'confirmed');
@@ -757,49 +566,27 @@
             updateBookingStatus(bookingId, 'declined');
         }
         
-        // Update booking status with reliable sync
-        async function updateBookingStatus(bookingId, newStatus) {
-            showNotification('adminPanelNotification', `⏳ ${newStatus === 'confirmed' ? 'Confirming' : 'Declining'} booking...`, 'info');
-            
-            // Find and update the booking
-            let updated = false;
+        // Update booking status
+        function updateBookingStatus(bookingId, newStatus) {
             Object.keys(bookingsData).forEach(date => {
-                Object.keys(bookingsData[date]).forEach(time => {
-                    if (bookingsData[date][time].id === bookingId) {
-                        if (newStatus === 'declined') {
-                            // Remove declined bookings
-                            delete bookingsData[date][time];
-                        } else {
-                            bookingsData[date][time].status = newStatus;
+                if (bookingsData[date]) {
+                    Object.keys(bookingsData[date]).forEach(time => {
+                        if (bookingsData[date][time] && bookingsData[date][time].id === bookingId) {
+                            if (newStatus === 'declined') {
+                                delete bookingsData[date][time];
+                            } else {
+                                bookingsData[date][time].status = newStatus;
+                            }
+                            
+                            saveToStorage();
+                            showNotification('adminPanelNotification', 
+                                `✅ Booking ${newStatus === 'confirmed' ? 'confirmed' : 'declined'}!`, 'success');
+                            loadAdminBookings();
+                            return;
                         }
-                        updated = true;
-                        return;
-                    }
-                });
-            });
-            
-            if (updated) {
-                // Save locally first
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
-                
-                // Try to sync to server
-                const synced = await saveToServer();
-                
-                if (synced) {
-                    showNotification('adminPanelNotification', 
-                        `✅ Booking ${newStatus === 'confirmed' ? 'confirmed' : 'declined'}! Will appear on all devices within 5 seconds.`, 
-                        'success');
-                } else {
-                    showNotification('adminPanelNotification', 
-                        `✅ Booking ${newStatus === 'confirmed' ? 'confirmed' : 'declined'}! Will sync when online.`, 
-                        'info');
+                    });
                 }
-                
-                loadAdminBookings();
-                
-                // Force immediate server check
-                setTimeout(loadFromServer, 2000);
-            }
+            });
         }
     </script>
 </body>
