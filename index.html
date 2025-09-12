@@ -316,7 +316,8 @@
     </div>
 
     <script>
-        // ULTRA-SIMPLE cross-browser sync - guaranteed to work!
+        // Google Sheets as Database - Reliable Cross-Browser Sync
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyyoqohc-hZkpEbsX_9uKOLa-94o2s6JCq3gDCo0bBRU98P15r6sDiWiaLVOatZTLwy/exec';
         const STORAGE_KEY = 'rideBookcutBookings';
         
         // Data storage
@@ -324,6 +325,11 @@
         let selectedDate = '';
         let selectedTime = '';
         let isAdminLoggedIn = false;
+        let isOnline = navigator.onLine;
+        
+        // Check online status
+        window.addEventListener('online', () => { isOnline = true; syncToServer(); });
+        window.addEventListener('offline', () => { isOnline = false; });
         
         // Notification system (replaces popup alerts)
         function showNotification(containerId, message, type = 'info') {
@@ -347,56 +353,115 @@
             document.getElementById('selectedDate').min = today;
             selectedDate = today;
             
-            // Load data from localStorage
-            loadDataFromStorage();
-            loadTimeSlots();
+            // Load data from server and local storage
+            loadInitialData();
             
-            // Start cross-browser polling (checks for updates every 2 seconds)
-            startCrossBrowserSync();
+            // Start real-time sync (every 5 seconds)
+            startRealTimeSync();
         };
         
-        // Simple cross-browser sync using localStorage + polling
-        function startCrossBrowserSync() {
-            setInterval(() => {
-                checkForUpdates();
-            }, 2000); // Check every 2 seconds
-        }
-        
-        // Check if data was updated by another browser tab
-        function checkForUpdates() {
-            const storedData = localStorage.getItem(STORAGE_KEY);
-            const currentDataString = JSON.stringify(bookingsData);
+        // Load initial data from both server and local storage
+        async function loadInitialData() {
+            // First, load from local storage for instant display
+            loadFromLocalStorage();
+            loadTimeSlots();
             
-            if (storedData && storedData !== currentDataString) {
-                console.log('📡 Data updated by another browser!');
-                bookingsData = JSON.parse(storedData);
-                
-                // Refresh current view
-                if (selectedDate) {
-                    loadTimeSlots();
-                }
-                if (isAdminLoggedIn) {
-                    loadAdminBookings();
-                }
+            // Then try to sync from server
+            if (isOnline) {
+                await loadFromServer();
             }
         }
         
-        // Load data from localStorage
-        function loadDataFromStorage() {
+        // Start real-time synchronization
+        function startRealTimeSync() {
+            setInterval(async () => {
+                if (isOnline) {
+                    await loadFromServer();
+                }
+            }, 5000); // Check every 5 seconds
+        }
+        
+        // Load data from local storage
+        function loadFromLocalStorage() {
             const storedData = localStorage.getItem(STORAGE_KEY);
             if (storedData) {
                 bookingsData = JSON.parse(storedData);
-                console.log('💾 Loaded existing booking data');
+                console.log('💾 Loaded from local storage');
             } else {
                 bookingsData = {};
-                console.log('🆕 No existing bookings found');
             }
         }
         
-        // Save data to localStorage (instantly available to other browser tabs)
-        function saveDataToStorage() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
-            console.log('✅ Booking data saved - will sync to other browsers in 2 seconds');
+        // Load data from server (Google Sheets)
+        async function loadFromServer() {
+            try {
+                const response = await fetch(`${SHEET_URL}?action=get`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data && data.bookings) {
+                        const oldData = JSON.stringify(bookingsData);
+                        bookingsData = data.bookings;
+                        
+                        // Save to local storage
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
+                        
+                        // Only refresh UI if data actually changed
+                        if (oldData !== JSON.stringify(bookingsData)) {
+                            console.log('📡 Synced from server - updating display');
+                            
+                            // Refresh current view
+                            if (selectedDate) {
+                                loadTimeSlots();
+                            }
+                            if (isAdminLoggedIn) {
+                                loadAdminBookings();
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Server sync unavailable:', error.message);
+            }
+        }
+        
+        // Save data to server (Google Sheets)
+        async function saveToServer() {
+            if (!isOnline) {
+                console.log('Offline - will sync when online');
+                return false;
+            }
+            
+            try {
+                const response = await fetch(SHEET_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        action: 'save',
+                        bookings: bookingsData 
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Saved to server');
+                    return true;
+                } else {
+                    throw new Error('Save failed');
+                }
+            } catch (error) {
+                console.log('Server save failed:', error.message);
+                return false;
+            }
+        }
+        
+        // Sync to server when coming back online
+        async function syncToServer() {
+            console.log('🌐 Back online - syncing...');
+            await saveToServer();
+            await loadFromServer();
         }
         
         // Generate time slots (9 AM to 7 PM, 45-minute intervals)
@@ -434,7 +499,7 @@
                         slot.innerHTML = `${time}<br><small>Pending</small>`;
                     } else if (booking.status === 'confirmed') {
                         slot.className += ' confirmed';
-                        slot.innerHTML = `${time}<br><small>BOOKED</small>`;
+                        slot.innerHTML = `${time}<br><strong>BOOKED</strong><br><small>${booking.customerName}</small>`;
                     }
                 } else {
                     slot.className += ' available';
@@ -460,7 +525,7 @@
             document.getElementById('bookingForm').classList.remove('hidden');
         }
         
-        // Submit booking with simple sync
+        // Submit booking with reliable sync
         async function submitBooking() {
             const name = document.getElementById('customerName').value.trim();
             const phone = document.getElementById('customerPhone').value.trim();
@@ -486,14 +551,17 @@
                 timestamp: new Date().toISOString()
             };
             
-            // Save booking
+            // Save booking locally first
             if (!bookingsData[selectedDate]) {
                 bookingsData[selectedDate] = {};
             }
             bookingsData[selectedDate][selectedTime] = booking;
             
-            // Save to localStorage (syncs automatically to other browsers)
-            saveDataToStorage();
+            // Save to local storage immediately
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
+            
+            // Try to sync to server
+            const synced = await saveToServer();
             
             // Reset form and reload slots
             document.getElementById('customerName').value = '';
@@ -501,9 +569,16 @@
             document.getElementById('serviceRequest').value = '';
             document.getElementById('bookingForm').classList.add('hidden');
             
-            showNotification('customerNotification', '✅ Booking submitted! Open another browser on this device to see it sync within 2 seconds.', 'success');
+            if (synced) {
+                showNotification('customerNotification', '✅ Booking submitted! It will appear on all devices within 5 seconds.', 'success');
+            } else {
+                showNotification('customerNotification', '✅ Booking saved! Will sync to other devices when online.', 'info');
+            }
             
             loadTimeSlots();
+            
+            // Force immediate server check
+            setTimeout(loadFromServer, 2000);
         }
         
         // Cancel booking
@@ -626,7 +701,7 @@
             updateBookingStatus(bookingId, 'declined');
         }
         
-        // Update booking status with simple sync
+        // Update booking status with reliable sync
         async function updateBookingStatus(bookingId, newStatus) {
             showNotification('adminPanelNotification', `⏳ ${newStatus === 'confirmed' ? 'Confirming' : 'Declining'} booking...`, 'info');
             
@@ -648,14 +723,26 @@
             });
             
             if (updated) {
-                // Save to localStorage (syncs automatically to other browsers)
-                saveDataToStorage();
+                // Save locally first
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
                 
-                showNotification('adminPanelNotification', 
-                    `✅ Booking ${newStatus === 'confirmed' ? 'confirmed' : 'declined'}! Open customer view in another browser to see the update.`, 
-                    'success');
+                // Try to sync to server
+                const synced = await saveToServer();
+                
+                if (synced) {
+                    showNotification('adminPanelNotification', 
+                        `✅ Booking ${newStatus === 'confirmed' ? 'confirmed' : 'declined'}! Will appear on all devices within 5 seconds.`, 
+                        'success');
+                } else {
+                    showNotification('adminPanelNotification', 
+                        `✅ Booking ${newStatus === 'confirmed' ? 'confirmed' : 'declined'}! Will sync when online.`, 
+                        'info');
+                }
                 
                 loadAdminBookings();
+                
+                // Force immediate server check
+                setTimeout(loadFromServer, 2000);
             }
         }
     </script>
