@@ -350,7 +350,7 @@
         // BULLETPROOF BOOKING SYSTEM - Google Sheets Sync
         const STORAGE_KEY = 'rideBookcutBookings';
         // Replace this with your Google Apps Script Web App URL
-        const GOOGLE_SHEETS_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzglGvS105L8yyxQEoAfoH7hshm1E23DEOa5W_zOJR72geT8YQHsdZIMnHeU1sCWeH4/exec';
         
         let bookingsData = {};
         let daysOffData = []; // Store days off
@@ -444,7 +444,7 @@
             const savedUrl = localStorage.getItem('googleSheetsUrl');
             const currentUrl = savedUrl || GOOGLE_SHEETS_URL;
             
-            if (currentUrl === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' || !currentUrl) {
+            if (currentUrl === 'https://script.google.com/macros/s/AKfycbzglGvS105L8yyxQEoAfoH7hshm1E23DEOa5W_zOJR72geT8YQHsdZIMnHeU1sCWeH4/exec' || !currentUrl) {
                 console.log('⚠️ Google Sheets URL not configured, using localStorage only');
                 syncLocalOnly();
                 return;
@@ -553,7 +553,7 @@
             const savedUrl = localStorage.getItem('googleSheetsUrl');
             const currentUrl = savedUrl || GOOGLE_SHEETS_URL;
             
-            if (currentUrl === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE' || !currentUrl) {
+            if (currentUrl === 'https://script.google.com/macros/s/AKfycbzglGvS105L8yyxQEoAfoH7hshm1E23DEOa5W_zOJR72geT8YQHsdZIMnHeU1sCWeH4/exec' || !currentUrl) {
                 console.log('⚠️ Google Sheets URL not configured, saving to localStorage only');
                 return;
             }
@@ -605,7 +605,7 @@
                 lastSyncTime = now;
                 // Only sync if we have a configured URL
                 const savedUrl = localStorage.getItem('googleSheetsUrl');
-                if (savedUrl && savedUrl !== 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+                if (savedUrl && savedUrl !== 'https://script.google.com/macros/s/AKfycbzglGvS105L8yyxQEoAfoH7hshm1E23DEOa5W_zOJR72geT8YQHsdZIMnHeU1sCWeH4/exec') {
                     await syncFromCloud();
                 }
             }
@@ -1010,7 +1010,7 @@
         async function manualSync() {
             const savedUrl = localStorage.getItem('googleSheetsUrl');
             
-            if (!savedUrl || savedUrl === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+            if (!savedUrl || savedUrl === 'https://script.google.com/macros/s/AKfycbzglGvS105L8yyxQEoAfoH7hshm1E23DEOa5W_zOJR72geT8YQHsdZIMnHeU1sCWeH4/exec') {
                 showNotification('sheetsNotification', '⚠️ Please configure Google Sheets URL first!', 'error');
                 return;
             }
@@ -1029,3 +1029,4 @@
     </script>
 </body>
 </html>
+
