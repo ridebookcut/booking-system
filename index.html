@@ -381,9 +381,9 @@
             await loadFromStorage();
             loadTimeSlots();
             
-            // Check for cloud updates every 5 seconds
-            setInterval(checkForUpdates, 5000);
-            console.log('🔄 Cloud sync started - updates every 5 seconds');
+            // Check for cloud updates every 30 seconds (less aggressive)
+            setInterval(checkForUpdates, 30000);
+            console.log('🔄 Cloud sync started - updates every 30 seconds');
         };
         
         // Smart logo loading - tries multiple filenames
@@ -462,17 +462,36 @@
                     
                     if (result && result.bookings) {
                         console.log('✅ Google Sheets data loaded successfully');
-                        bookingsData = result.bookings;
                         
-                        // Also load days off if available
-                        if (result.daysOff) {
-                            daysOffData = result.daysOff;
+                        // IMPORTANT: Don't overwrite local data completely
+                        // Merge with existing data to protect recent bookings
+                        const localTimestamp = parseInt(localStorage.getItem(STORAGE_KEY + '_timestamp') || '0');
+                        const cloudTimestamp = result.lastUpdate || 0;
+                        
+                        // Only update if cloud data is newer than 30 seconds ago
+                        if (cloudTimestamp > localTimestamp - 30000) {
+                            // Smart merge: keep recent local bookings
+                            Object.keys(result.bookings).forEach(date => {
+                                if (!bookingsData[date]) bookingsData[date] = {};
+                                Object.keys(result.bookings[date]).forEach(time => {
+                                    const cloudBooking = result.bookings[date][time];
+                                    const localBooking = bookingsData[date][time];
+                                    
+                                    // Only update if cloud booking is newer or local doesn't exist
+                                    if (!localBooking || new Date(cloudBooking.timestamp) > new Date(localBooking.timestamp)) {
+                                        bookingsData[date][time] = cloudBooking;
+                                    }
+                                });
+                            });
+                            
+                            if (result.daysOff) {
+                                daysOffData = result.daysOff;
+                            }
+                            
+                            // Save merged data
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
+                            localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
                         }
-                        
-                        // Save to localStorage as backup
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
-                        localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
-                        localStorage.setItem(STORAGE_KEY + '_timestamp', Date.now().toString());
                         
                         // Refresh display
                         if (selectedDate) loadTimeSlots();
@@ -481,18 +500,15 @@
                             loadDayOffList();
                         }
                     } else {
-                        console.log('⚠️ No booking data in response');
-                        syncLocalOnly();
+                        console.log('⚠️ No booking data in response, keeping local data');
                     }
                 } else {
                     console.log('❌ Google Sheets sync failed, status:', response.status);
-                    const errorText = await response.text();
-                    console.log('❌ Error response:', errorText);
-                    syncLocalOnly();
+                    console.log('⚠️ Keeping local data safe');
                 }
             } catch (error) {
                 console.log('❌ Google Sheets sync error:', error.message);
-                syncLocalOnly();
+                console.log('⚠️ Keeping local data safe');
             }
         }
         
@@ -516,13 +532,20 @@
         async function saveToStorage() {
             const timestamp = Date.now();
             
-            // Save locally first (instant)
+            // Save locally first (instant and reliable)
             localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
             localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
             localStorage.setItem(STORAGE_KEY + '_timestamp', timestamp.toString());
             
-            // Then sync to cloud for cross-device access
-            await syncToCloud(timestamp);
+            console.log('✅ Data saved to localStorage successfully');
+            
+            // Try to sync to cloud (but don't fail if it doesn't work)
+            try {
+                await syncToCloud(timestamp);
+            } catch (error) {
+                console.log('⚠️ Cloud sync failed, but local data is safe:', error.message);
+                // Don't clear local data if cloud sync fails
+            }
         }
         
         // Sync to Google Sheets
@@ -575,12 +598,16 @@
             }
         }
         
-        // Check for updates from cloud every 5 seconds
+        // Check for updates from cloud every 30 seconds (reduced frequency)
         async function checkForUpdates() {
             const now = Date.now();
-            if (now - lastSyncTime > 5000) { // Only sync every 5 seconds
+            if (now - lastSyncTime > 30000) { // Only sync every 30 seconds
                 lastSyncTime = now;
-                await syncFromCloud();
+                // Only sync if we have a configured URL
+                const savedUrl = localStorage.getItem('googleSheetsUrl');
+                if (savedUrl && savedUrl !== 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+                    await syncFromCloud();
+                }
             }
         }
         
@@ -670,19 +697,30 @@
                 timestamp: new Date().toISOString()
             };
             
+            console.log('📝 Creating booking:', booking);
+            
             if (!bookingsData[selectedDate]) bookingsData[selectedDate] = {};
             bookingsData[selectedDate][selectedTime] = booking;
             
+            console.log('📝 Booking added to data:', bookingsData[selectedDate][selectedTime]);
+            
             showNotification('customerNotification', '🔄 Saving booking...', 'info');
+            
+            // Save immediately and safely
             await saveToStorage();
             
+            // Clear form
             document.getElementById('customerName').value = '';
             document.getElementById('customerPhone').value = '';
             document.getElementById('serviceRequest').value = '';
             document.getElementById('bookingForm').classList.add('hidden');
             
-            showNotification('customerNotification', '✅ Booking submitted! It will sync across all devices in a few seconds.', 'success');
+            // Refresh display to show the pending booking
             loadTimeSlots();
+            
+            showNotification('customerNotification', '✅ Booking submitted! Status: PENDING - waiting for owner confirmation.', 'success');
+            
+            console.log('✅ Booking process completed successfully');
         }
         
         // Cancel booking
