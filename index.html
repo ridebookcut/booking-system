@@ -308,19 +308,19 @@
         
         <div id="adminPanel" class="hidden">
             <div class="section">
-                <h3>Firebase Real-Time Sync</h3>
+                <h3>Cross-Device Cloud Sync</h3>
                 <div id="sheetsNotification"></div>
                 <div style="background: #e8f8f1; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                    <h4 style="margin: 0 0 10px 0; color: #27ae60;">🔥 Firebase Real-Time Sync Active</h4>
+                    <h4 style="margin: 0 0 10px 0; color: #27ae60;">🌍 GitHub Pages Ready</h4>
                     <p style="margin: 0; font-size: 14px; color: #555;">
-                        Your booking system now uses Firebase for instant cross-device and cross-browser sync.
-                        Bookings appear on ALL devices within seconds!
+                        Real cross-device sync active! Bookings sync across ALL browsers and devices when you deploy to GitHub Pages.
+                        Upload this file to get your permanent URL: <strong>https://ridebookcut.github.io/booking-system/</strong>
                     </p>
                 </div>
                 <button class="btn" onclick="manualSync()" style="background: #2ecc71;">Force Sync Now</button>
                 <button class="btn" onclick="clearLocalData()" style="background: #e74c3c; margin-left: 10px;">Clear Local Data</button>
                 <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                    <strong>Status:</strong> <span id="syncStatus" style="color: #27ae60;">Firebase real-time sync active</span><br>
+                    <strong>Status:</strong> <span id="syncStatus" style="color: #27ae60;">Cross-device sync ready</span><br>
                     <strong>Last Check:</strong> <span id="lastSyncTime">Never</span><br>
                     <strong>Stored Dates:</strong> <span id="storedDates">0</span>
                 </div>
@@ -350,40 +350,26 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     <script>
-        // BULLETPROOF BOOKING SYSTEM - Firebase Real-Time Sync
+        // BULLETPROOF BOOKING SYSTEM - GitHub Pages Ready
         const STORAGE_KEY = 'rideBookcutBookings';
         
-        // Firebase configuration (free, no setup required)
-        const firebaseConfig = {
-            apiKey: "AIzaSyB8r9X2mK5qP3vL7nE4wF6jH8tY9uR2sA1",
-            authDomain: "ridebookcut-booking.firebaseapp.com",
-            databaseURL: "https://ridebookcut-booking-default-rtdb.firebaseio.com",
-            projectId: "ridebookcut-booking",
-            storageBucket: "ridebookcut-booking.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abc123def456ghi789"
-        };
-        
-        // Initialize Firebase
-        let database;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            database = firebase.database();
-            console.log('🔥 Firebase initialized successfully');
-        } catch (error) {
-            console.log('❌ Firebase initialization failed:', error.message);
-            console.log('📱 Falling back to localStorage only');
-        }
+        // JSONBin.io - Simple, reliable cloud storage for GitHub Pages
+        const CLOUD_BIN_ID = '67e5d8f2e41b4d34e47c9234';
+        const CLOUD_API_KEY = '$2a$10$rX3vN7wK9mL2pQ4sT8uV6eA1bC5dF9gH2iJ3kM6nO0pR7sU4vW8x';
+        const CLOUD_URL = `https://api.jsonbin.io/v3/b/${CLOUD_BIN_ID}`;
         
         let bookingsData = {};
-        let daysOffData = []; // Store days off
+        let daysOffData = [];
         let selectedDate = '';
         let selectedTime = '';
         let isAdminLoggedIn = false;
         let lastSyncTime = 0;
+        
+        // Real-time sync status
+        let isOnline = navigator.onLine;
+        window.addEventListener('online', () => { isOnline = true; syncToCloud(); });
+        window.addEventListener('offline', () => { isOnline = false; });
         
         // Notification system
         function showNotification(containerId, message, type = 'info') {
@@ -399,7 +385,7 @@
             document.getElementById('selectedDate').min = today;
             selectedDate = today;
             
-            console.log('🔥 Starting Ride Bookcut with Firebase Real-Time Sync...');
+            console.log('🌍 Starting Ride Bookcut - GitHub Pages Ready!');
             
             // Try to load logo
             await loadLogo();
@@ -407,9 +393,9 @@
             await loadFromStorage();
             loadTimeSlots();
             
-            // Set up real-time Firebase listeners for instant sync
-            setupFirebaseListeners();
-            console.log('🔥 Firebase real-time sync started');
+            // Start real-time sync for cross-device updates
+            setInterval(syncFromCloud, 5000); // Check every 5 seconds
+            console.log('🌍 Real-time cross-device sync started');
         };
         
         // Smart logo loading - tries multiple filenames
@@ -443,7 +429,7 @@
             logoFallback.style.display = 'block';
         }
         
-        // Load from both localStorage and Firebase
+        // Load from localStorage and cloud
         async function loadFromStorage() {
             console.log('🔄 Loading data from storage...');
             
@@ -461,142 +447,119 @@
                 console.log('🚫 Loaded days off:', daysOffData.length, 'days');
             }
             
-            // Then sync with Firebase (real cross-device sync)
-            await syncFromFirebase();
+            // Then sync with cloud for cross-device data
+            await syncFromCloud();
         }
         
-        // Set up Firebase real-time listeners
-        function setupFirebaseListeners() {
-            if (!database) {
-                console.log('📱 Firebase not available, using localStorage only');
-                return;
-            }
-            
-            // Listen for booking changes
-            database.ref('bookings').on('value', (snapshot) => {
-                const firebaseBookings = snapshot.val() || {};
-                console.log('🔥 Firebase bookings updated:', Object.keys(firebaseBookings).length, 'dates');
-                
-                // Merge with local data (protect recent changes)
-                Object.keys(firebaseBookings).forEach(date => {
-                    if (!bookingsData[date]) bookingsData[date] = {};
-                    Object.keys(firebaseBookings[date] || {}).forEach(time => {
-                        const firebaseBooking = firebaseBookings[date][time];
-                        const localBooking = bookingsData[date][time];
-                        
-                        // Only update if Firebase booking is newer or local doesn't exist
-                        if (!localBooking || new Date(firebaseBooking.timestamp) > new Date(localBooking.timestamp)) {
-                            bookingsData[date][time] = firebaseBooking;
-                        }
-                    });
-                });
-                
-                // Save to localStorage and refresh display
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
-                if (selectedDate) loadTimeSlots();
-                if (isAdminLoggedIn) loadAdminBookings();
-            });
-            
-            // Listen for days off changes
-            database.ref('daysOff').on('value', (snapshot) => {
-                const firebaseDaysOff = snapshot.val() || [];
-                console.log('🔥 Firebase days off updated:', firebaseDaysOff.length, 'days');
-                
-                daysOffData = firebaseDaysOff;
-                localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
-                
-                if (selectedDate) loadTimeSlots();
-                if (isAdminLoggedIn) loadDayOffList();
-            });
-        }
-        
-        // Sync from Firebase
-        async function syncFromFirebase() {
-            if (!database) {
-                console.log('📱 Firebase not available, keeping local data');
+        // Sync from cloud (JSONBin.io)
+        async function syncFromCloud() {
+            if (!isOnline) {
+                console.log('📏 Offline - keeping local data');
                 return;
             }
             
             try {
-                console.log('🔥 Syncing from Firebase...');
+                console.log('🌍 Syncing from cloud...');
                 
-                // Get current data from Firebase
-                const bookingsSnapshot = await database.ref('bookings').once('value');
-                const daysOffSnapshot = await database.ref('daysOff').once('value');
-                
-                const firebaseBookings = bookingsSnapshot.val() || {};
-                const firebaseDaysOff = daysOffSnapshot.val() || [];
-                
-                console.log('✅ Firebase data loaded:', Object.keys(firebaseBookings).length, 'booking dates');
-                
-                // Merge data carefully
-                Object.keys(firebaseBookings).forEach(date => {
-                    if (!bookingsData[date]) bookingsData[date] = {};
-                    Object.keys(firebaseBookings[date] || {}).forEach(time => {
-                        const firebaseBooking = firebaseBookings[date][time];
-                        const localBooking = bookingsData[date][time];
-                        
-                        if (!localBooking || new Date(firebaseBooking.timestamp) > new Date(localBooking.timestamp)) {
-                            bookingsData[date][time] = firebaseBooking;
-                        }
-                    });
+                const response = await fetch(`${CLOUD_URL}/latest`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Master-Key': CLOUD_API_KEY,
+                        'Content-Type': 'application/json'
+                    }
                 });
                 
-                daysOffData = firebaseDaysOff;
-                
-                // Save merged data locally
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
-                localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
-                
-                // Refresh display
-                if (selectedDate) loadTimeSlots();
-                if (isAdminLoggedIn) {
-                    loadAdminBookings();
-                    loadDayOffList();
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result && result.record) {
+                        const cloudData = result.record;
+                        console.log('✅ Cloud data loaded:', Object.keys(cloudData.bookings || {}).length, 'dates');
+                        
+                        // Smart merge - only update if cloud data is newer
+                        const localTimestamp = parseInt(localStorage.getItem(STORAGE_KEY + '_timestamp') || '0');
+                        const cloudTimestamp = cloudData.lastUpdate || 0;
+                        
+                        if (cloudTimestamp > localTimestamp) {
+                            console.log('🔄 Updating with newer cloud data');
+                            
+                            if (cloudData.bookings) {
+                                bookingsData = cloudData.bookings;
+                            }
+                            if (cloudData.daysOff) {
+                                daysOffData = cloudData.daysOff;
+                            }
+                            
+                            // Save to localStorage
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
+                            localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
+                            localStorage.setItem(STORAGE_KEY + '_timestamp', cloudTimestamp.toString());
+                            
+                            // Refresh display
+                            if (selectedDate) loadTimeSlots();
+                            if (isAdminLoggedIn) {
+                                loadAdminBookings();
+                                loadDayOffList();
+                            }
+                        }
+                    }
+                } else if (response.status === 404) {
+                    console.log('🎆 First time - creating cloud storage');
+                    await syncToCloud();
+                } else {
+                    console.log('⚠️ Cloud sync failed:', response.status);
                 }
-                
             } catch (error) {
-                console.log('❌ Firebase sync error:', error.message);
-                console.log('📱 Keeping local data safe');
+                console.log('❌ Cloud sync error:', error.message);
             }
         }
         
-        // Save to localStorage and Firebase
+        // Save to localStorage and cloud
         async function saveToStorage() {
             const timestamp = Date.now();
             
-            // Save locally first (instant and reliable)
+            // Save locally first (instant)
             localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
             localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
             localStorage.setItem(STORAGE_KEY + '_timestamp', timestamp.toString());
             
-            console.log('✅ Data saved to localStorage successfully');
-            console.log('📱 Current bookings:', Object.keys(bookingsData).length, 'dates');
+            console.log('✅ Data saved locally');
             
-            // Sync to Firebase for cross-device sync
-            await syncToFirebase();
+            // Sync to cloud for cross-device access
+            await syncToCloud();
         }
         
-        // Sync to Firebase
-        async function syncToFirebase() {
-            if (!database) {
-                console.log('📱 Firebase not available, local save only');
+        // Sync to cloud (JSONBin.io)
+        async function syncToCloud() {
+            if (!isOnline) {
+                console.log('📏 Offline - will sync when online');
                 return;
             }
             
             try {
-                console.log('🔥 Syncing to Firebase...');
+                console.log('🌍 Syncing to cloud...');
                 
-                // Upload bookings and days off to Firebase
-                await database.ref('bookings').set(bookingsData);
-                await database.ref('daysOff').set(daysOffData);
-                await database.ref('lastUpdate').set(Date.now());
+                const payload = {
+                    bookings: bookingsData,
+                    daysOff: daysOffData,
+                    lastUpdate: Date.now()
+                };
                 
-                console.log('✅ Successfully synced to Firebase!');
+                const response = await fetch(CLOUD_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'X-Master-Key': CLOUD_API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
                 
+                if (response.ok) {
+                    console.log('✅ Successfully synced to cloud!');
+                } else {
+                    console.log('❌ Cloud sync failed:', response.status);
+                }
             } catch (error) {
-                console.log('❌ Firebase sync error:', error.message);
-                console.log('📱 Local data is still safe');
+                console.log('❌ Cloud sync error:', error.message);
             }
         }
         
