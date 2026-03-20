@@ -395,7 +395,18 @@
 <body>
     <div class="header">
         <div class="logo">
-            <img id="logoImage" src="https://ridebookcut.github.io/booking-system/logo.jpg.jpg" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';" alt="Ride Bookcut Logo">
+            <img id="logoImage" src="https://ridebookcut.github.io/booking-system/logo.jpg"
+                onerror="
+                    const tries = ['logo.jpg','logo.jpeg','logo.png','logo.jpg.jpg'];
+                    const idx = parseInt(this.dataset.try||0);
+                    if (idx < tries.length) {
+                        this.dataset.try = idx + 1;
+                        this.src = tries[idx];
+                    } else {
+                        this.style.display='none';
+                        document.getElementById('logoFallback').style.display='block';
+                    }
+                " alt="Ride Bookcut Logo">
             <div class="logo-fallback" id="logoFallback" style="display: none;">✂️</div>
         </div>
         <h1>Ride Bookcut</h1>
@@ -635,16 +646,16 @@
         }
         
         window.onload = async function() {
-            const now = new Date();
-            let selectedDateObj = now;
+            // Timezone Viet Nam UTC+7
+            const nowVN = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
             let dateAutoAdvanced = false;
-            if (now.getHours() >= 19) {
-                selectedDateObj = new Date(now);
-                selectedDateObj.setDate(now.getDate() + 1);
+            if (nowVN.getHours() >= 19) {
+                nowVN.setDate(nowVN.getDate() + 1);
                 dateAutoAdvanced = true;
             }
-            
-            const selectedDateStr = selectedDateObj.toISOString().split('T')[0];
+            const selectedDateStr = nowVN.getFullYear() + '-' +
+                String(nowVN.getMonth() + 1).padStart(2, '0') + '-' +
+                String(nowVN.getDate()).padStart(2, '0');
             document.getElementById('selectedDate').value = selectedDateStr;
             document.getElementById('selectedDate').min = new Date().toISOString().split('T')[0];
             selectedDate = selectedDateStr;
@@ -795,20 +806,27 @@
                         slot.innerHTML = `${time}<br><strong>BOOKED</strong><br><small>${booking.customerName}</small>`;
                     }
                 } else {
-                    const now = new Date();
-                    const today = now.toISOString().split('T')[0];
-                    
-                    if (selectedDate === today) {
+                    // Timezone Viet Nam UTC+7
+                    const nowVN = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
+                    const todayVN = nowVN.getFullYear() + '-' +
+                        String(nowVN.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(nowVN.getDate()).padStart(2, '0');
+
+                    slot.className += ' available';
+
+                    if (selectedDate === todayVN) {
                         const [hours, minutes] = time.split(':').map(Number);
-                        const slotTime = new Date(selectedDate);
-                        slotTime.setHours(hours, minutes, 0, 0);
-                        
-                        slot.className += ' available';
-                        if (slotTime >= now) {
+                        const nowMinutes  = nowVN.getHours() * 60 + nowVN.getMinutes();
+                        const slotMinutes = hours * 60 + minutes;
+
+                        if (slotMinutes >= nowMinutes) {
                             slot.onclick = () => selectTimeSlot(time, slot);
+                        } else {
+                            slot.style.opacity = '0.4';
+                            slot.style.cursor  = 'not-allowed';
+                            slot.title = 'Time slot has passed';
                         }
                     } else {
-                        slot.className += ' available';
                         slot.onclick = () => selectTimeSlot(time, slot);
                     }
                 }
