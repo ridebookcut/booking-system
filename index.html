@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ride Bookcut - Barbershop Booking</title>
     
-    <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Ride Bookcut - Barbershop Booking">
     <meta property="og:description" content="Book your barbershop appointment online with Ride Bookcut.">
     <meta property="og:image" content="https://ridebookcut.github.io/booking-system/logo.jpg.jpg">
@@ -14,7 +13,6 @@
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     
-    <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Ride Bookcut - Barbershop Booking">
     <meta name="twitter:description" content="Book your barbershop appointment online with Ride Bookcut.">
@@ -23,6 +21,9 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- ✉️ EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
     <style>
         body {
@@ -245,17 +246,9 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        .stat-card.pending {
-            border-top: 4px solid #f39c12;
-        }
-        
-        .stat-card.confirmed {
-            border-top: 4px solid #27ae60;
-        }
-        
-        .stat-card.cancelled {
-            border-top: 4px solid #e74c3c;
-        }
+        .stat-card.pending { border-top: 4px solid #f39c12; }
+        .stat-card.confirmed { border-top: 4px solid #27ae60; }
+        .stat-card.cancelled { border-top: 4px solid #e74c3c; }
         
         .stat-value {
             font-size: 2em;
@@ -284,9 +277,7 @@
             transform: translateY(-2px);
         }
         
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
         
         .notification {
             padding: 15px;
@@ -297,23 +288,9 @@
             animation: fadeIn 0.5s ease-in;
         }
         
-        .notification.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
-        }
-        
-        .notification.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
-        }
-        
-        .notification.info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 2px solid #bee5eb;
-        }
+        .notification.success { background-color: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .notification.error { background-color: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+        .notification.info { background-color: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
         
         .date-group {
             margin-bottom: 20px;
@@ -334,9 +311,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
-        .date-group h4:hover {
-            background-color: #2a3520;
-        }
+        .date-group h4:hover { background-color: #2a3520; }
         
         .date-group h4::before {
             content: "Click to expand/collapse ▼";
@@ -346,124 +321,71 @@
             margin-top: 3px;
         }
         
-        .date-group h4.collapsed::before {
-            content: "Click to expand/collapse ▲";
-        }
+        .date-group h4.collapsed::before { content: "Click to expand/collapse ▲"; }
+        .date-group h4::after { display: none; }
+        .date-group h4.collapsed::after { display: none; }
+        .date-group.collapsed .bookings-content { display: none; }
         
-        .date-group h4::after {
-            display: none;
-        }
-        
-        .date-group h4.collapsed::after {
-            display: none;
-        }
-        
-        .date-group.collapsed .bookings-content {
-            display: none;
-        }
-        
-        .bookings-content {
-            margin-left: 10px;
-        }
-        
-        /* Calendar view styles */
-        .calendar-container {
-            margin: 20px 0;
-        }
-        
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .calendar-nav {
-            background: #334024;
-            color: #d9c1a9;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            user-select: none;
-        }
-        
-        .calendar-nav:hover {
-            background: #2a3520;
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+        .bookings-content { margin-left: 10px; }
+
+        /* ─── EmailJS Config Banner ─── */
+        .emailjs-setup-banner {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid #e94560;
+            border-radius: 12px;
+            padding: 20px 25px;
             margin-bottom: 20px;
+            color: #eee;
         }
-        
-        .calendar-day {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px 5px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
+
+        .emailjs-setup-banner h4 {
+            margin: 0 0 12px 0;
+            color: #e94560;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .calendar-day:hover {
-            background: #e9ecef;
+
+        .emailjs-setup-banner ol {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+            font-size: 0.92em;
+            line-height: 1.8;
         }
-        
-        .calendar-day.has-bookings {
-            background: #d1ecf1;
-            border-color: #bee5eb;
-            font-weight: bold;
+
+        .emailjs-setup-banner code {
+            background: rgba(233, 69, 96, 0.2);
+            color: #e94560;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: monospace;
         }
-        
-        .calendar-day.has-bookings:hover {
-            background: #c1e0e7;
+
+        .emailjs-setup-banner a {
+            color: #4fc3f7;
+            text-decoration: none;
         }
-        
-        .calendar-day.selected {
-            background: #334024;
-            color: #d9c1a9;
-            border-color: #334024;
+
+        .emailjs-status-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            font-size: 0.9em;
         }
-        
-        .calendar-day.empty {
-            background: #f8f9fa;
-            cursor: default;
+
+        .emailjs-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #e74c3c;
+            flex-shrink: 0;
         }
-        
-        .calendar-day.empty:hover {
-            background: #f8f9fa;
-        }
-        
-        .calendar-view-toggle {
-            background: #334024;
-            color: #d9c1a9;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .calendar-view-toggle:hover {
-            background: #2a3520;
-        }
-        
-        .selected-date-bookings {
-            margin-top: 20px;
-        }
-        
-        .selected-date-header {
-            background: #334024;
-            color: #d9c1a9;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        
+
+        .emailjs-dot.ready { background: #27ae60; }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -473,7 +395,7 @@
 <body>
     <div class="header">
         <div class="logo">
-            <img id="logoImage" src="https://ridebookcut.github.io/booking-system/logo.jpg.jpg" onerror="this.src='logo.jpg.jpg'; this.onerror=null;" alt="Ride Bookcut Logo">
+            <img id="logoImage" src="https://ridebookcut.github.io/booking-system/logo.jpg.jpg" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';" alt="Ride Bookcut Logo">
             <div class="logo-fallback" id="logoFallback" style="display: none;">✂️</div>
         </div>
         <h1>Ride Bookcut</h1>
@@ -534,11 +456,34 @@
                 <h3>Booking Dashboard</h3>
                 <div id="bookingStats" class="booking-stats"></div>
                 <div id="sheetsNotification"></div>
+
+                <!-- ✉️ EmailJS Setup Banner -->
+                <div class="emailjs-setup-banner">
+                    <h4>✉️ Email Notification Setup (EmailJS)</h4>
+                    <p style="margin: 0 0 8px 0; font-size: 0.9em; color: #aaa;">Follow these steps once to receive an email every time a booking is placed:</p>
+                    <ol>
+                        <li>Go to <a href="https://www.emailjs.com" target="_blank">emailjs.com</a> and create a free account</li>
+                        <li>Add an <strong>Email Service</strong> (connect your Gmail or other email)</li>
+                        <li>Create an <strong>Email Template</strong> — use these variables:<br>
+                            <code>{{booking_id}}</code> &nbsp;<code>{{customer_name}}</code> &nbsp;<code>{{customer_phone}}</code><br>
+                            <code>{{service_request}}</code> &nbsp;<code>{{booking_date}}</code> &nbsp;<code>{{booking_time}}</code>
+                        </li>
+                        <li>In the HTML file, find the <strong>EmailJS Config</strong> section and replace:<br>
+                            <code>YOUR_PUBLIC_KEY</code> → your EmailJS Public Key<br>
+                            <code>YOUR_SERVICE_ID</code> → your Service ID<br>
+                            <code>YOUR_TEMPLATE_ID</code> → your Template ID
+                        </li>
+                    </ol>
+                    <div class="emailjs-status-row">
+                        <div class="emailjs-dot" id="emailjsDot"></div>
+                        <span id="emailjsStatusText">EmailJS not configured yet — replace the placeholder keys above</span>
+                    </div>
+                </div>
+
                 <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
                     <h4 style="margin: 0 0 10px 0; color: #856404;">🚀 Firebase Cross-Device Sync Ready</h4>
                     <p style="margin: 0; font-size: 14px; color: #856404;">
-                        <strong>Current Status:</strong> <span id="firebaseStatus">Connecting...</span><br>
-                        <strong>For Real Cross-Device Sync:</strong> Configure Firebase in the &lt;head&gt; section
+                        <strong>Current Status:</strong> <span id="firebaseStatus">Connecting...</span>
                     </p>
                 </div>
                 <button class="btn" onclick="testConnection()" style="background: #2ecc71;">Test Sync</button>
@@ -570,9 +515,7 @@
             <div class="section">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3>Pending Bookings</h3>
-                    <div>
-                        <input type="text" id="pendingSearch" placeholder="Search pending bookings..." style="padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
-                    </div>
+                    <input type="text" id="pendingSearch" placeholder="Search pending bookings..." style="padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
                 </div>
                 <div id="adminPanelNotification"></div>
                 <div id="pendingBookings"></div>
@@ -581,9 +524,7 @@
             <div class="section">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3>All Bookings</h3>
-                    <div>
-                        <input type="text" id="allBookingsSearch" placeholder="Search all bookings..." style="padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
-                    </div>
+                    <input type="text" id="allBookingsSearch" placeholder="Search all bookings..." style="padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
                 </div>
                 <div id="allBookings"></div>
             </div>
@@ -591,7 +532,68 @@
     </div>
 
     <script>
-        // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
+        // ============================================================
+        // ✉️  EmailJS Config — REPLACE THESE THREE VALUES
+        // ============================================================
+        const EMAILJS_PUBLIC_KEY  = 'oYiYurSHKpgD-7-o-';
+        const EMAILJS_SERVICE_ID  = 'service_y30gvki';
+        const EMAILJS_TEMPLATE_ID = 'template_fezalwu';
+        // ============================================================
+
+        // Initialise EmailJS
+        const emailJSReady = (
+            EMAILJS_PUBLIC_KEY  !== 'YOUR_PUBLIC_KEY' &&
+            EMAILJS_SERVICE_ID  !== 'YOUR_SERVICE_ID' &&
+            EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID'
+        );
+
+        if (emailJSReady) {
+            emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+        }
+
+        // Update the status dot in the admin panel when it loads
+        function updateEmailJSStatusBadge() {
+            const dot  = document.getElementById('emailjsDot');
+            const text = document.getElementById('emailjsStatusText');
+            if (!dot || !text) return;
+            if (emailJSReady) {
+                dot.classList.add('ready');
+                text.textContent = '✅ EmailJS configured — you will receive email notifications for new bookings';
+            } else {
+                dot.classList.remove('ready');
+                text.textContent = 'EmailJS not configured yet — replace the placeholder keys above';
+            }
+        }
+
+        // Send email notification via EmailJS
+        async function sendBookingEmail(booking) {
+            if (!emailJSReady) {
+                console.warn('EmailJS not configured — skipping email notification');
+                return;
+            }
+
+            const templateParams = {
+                booking_id      : booking.id,
+                customer_name   : booking.customerName,
+                customer_phone  : booking.customerPhone,
+                service_request : booking.serviceRequest,
+                booking_date    : booking.date,
+                booking_time    : booking.time,
+                booking_status  : 'PENDING — awaiting your confirmation',
+                submitted_at    : new Date().toLocaleString()
+            };
+
+            try {
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                console.log('✅ Booking notification email sent!');
+            } catch (err) {
+                console.error('❌ EmailJS send error:', err);
+            }
+        }
+
+        // ============================================================
+        // Firebase configuration
+        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDfJHA-L2EFRQMQnY7QnhxoSIuKYOWsKkE",
             authDomain: "ridebookcut-a7df4.firebaseapp.com",
@@ -601,12 +603,11 @@
             appId: "1:1037928263057:web:517c34a6c3aaf86a8c7e30"
         };
 
-        // Initialize Firebase
         let db;
         let firebaseInitialized = false;
         
         try {
-            firebase.initializeApp(firebaseConfig);	
+            firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
             firebaseInitialized = true;
             document.getElementById('firebaseStatus').textContent = 'Connected';
@@ -617,7 +618,6 @@
             document.getElementById('firebaseStatus').style.color = '#e74c3c';
         }
 
-        // Simple booking system with Firebase
         const STORAGE_KEY = 'rideBookcutBookings';
         
         let bookingsData = {};
@@ -626,7 +626,6 @@
         let selectedTime = '';
         let isAdminLoggedIn = false;
         
-        // Notification system
         function showNotification(containerId, message, type = 'info') {
             const container = document.getElementById(containerId);
             if (container) {
@@ -635,13 +634,11 @@
             }
         }
         
-        // Initialize
         window.onload = async function() {
-            // Auto-select next day after 7 PM
             const now = new Date();
             let selectedDateObj = now;
             let dateAutoAdvanced = false;
-            if (now.getHours() >= 19) { // 7 PM
+            if (now.getHours() >= 19) {
                 selectedDateObj = new Date(now);
                 selectedDateObj.setDate(now.getDate() + 1);
                 dateAutoAdvanced = true;
@@ -652,76 +649,28 @@
             document.getElementById('selectedDate').min = new Date().toISOString().split('T')[0];
             selectedDate = selectedDateStr;
             
-            // Show notification if date was auto-advanced
             if (dateAutoAdvanced) {
                 showNotification('customerNotification', '📅 Date automatically set to next day after 7 PM', 'info');
             }
             
-            // Try to load your original logo
-            await loadLogo();
-            
-            // Load data from Firebase or localStorage
             await loadFromStorage();
             loadTimeSlots();
             updateDisplay();
         };
         
-        // Smart logo loading - finds your original logo when hosted online
-        async function loadLogo() {
-            const logoImage = document.getElementById('logoImage');
-            const logoFallback = document.getElementById('logoFallback');
-            // Try common names for your logo file
-            const possibleNames = [
-                'logo.jpg.jpg', 
-                'logo.jpg', 
-                'logo.jpeg', 
-                'logo.png', 
-                'ride-bookcut-logo.jpg', 
-                'ride-bookcut-logo.png',
-                'https://ridebookcut.github.io/booking-system/logo.jpg.jpg'
-            ];
-            
-            for (const filename of possibleNames) {
-                try {
-                    await new Promise((resolve, reject) => {
-                        const testImg = new Image();
-                        testImg.onload = () => {
-                            console.log('✅ Your original logo loaded:', filename);
-                            logoImage.src = filename;
-                            logoImage.style.display = 'block';
-                            logoFallback.style.display = 'none';
-                            resolve();
-                        };
-                        testImg.onerror = reject;
-                        testImg.src = filename;
-                    });
-                    return; // Success - exit the loop
-                } catch (error) {
-                    // Continue trying next filename
-                }
-            }
-            
-            // If no logo found (local file restrictions), show fallback
-            console.log('📋 Logo will display when hosted online');
-            logoFallback.style.display = 'block';
-        }
+
         
-        // Load from Firebase or localStorage
         async function loadFromStorage() {
             if (firebaseInitialized) {
                 try {
-                    // Load bookings from Firebase
                     const bookingsSnapshot = await db.collection('bookings').get();
                     bookingsData = {};
                     bookingsSnapshot.forEach(doc => {
                         const data = doc.data();
-                        if (!bookingsData[data.date]) {
-                            bookingsData[data.date] = {};
-                        }
+                        if (!bookingsData[data.date]) bookingsData[data.date] = {};
                         bookingsData[data.date][data.time] = data;
                     });
                     
-                    // Load days off from Firebase
                     const daysOffSnapshot = await db.collection('daysOff').get();
                     daysOffData = [];
                     daysOffSnapshot.forEach(doc => {
@@ -738,33 +687,22 @@
             }
         }
         
-        // Fallback to localStorage
         function loadFromLocalStorage() {
             const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                bookingsData = JSON.parse(stored);
-            }
+            if (stored) bookingsData = JSON.parse(stored);
             
             const storedDaysOff = localStorage.getItem(STORAGE_KEY + '_daysoff');
-            if (storedDaysOff) {
-                daysOffData = JSON.parse(storedDaysOff);
-            }
+            if (storedDaysOff) daysOffData = JSON.parse(storedDaysOff);
         }
         
-        // Save to Firebase or localStorage
         async function saveToStorage() {
             if (firebaseInitialized) {
                 try {
-                    // Save bookings to Firebase
                     const batch = db.batch();
                     
-                    // Clear existing bookings
                     const existingBookings = await db.collection('bookings').get();
-                    existingBookings.forEach(doc => {
-                        batch.delete(doc.ref);
-                    });
+                    existingBookings.forEach(doc => batch.delete(doc.ref));
                     
-                    // Add current bookings
                     Object.keys(bookingsData).forEach(date => {
                         Object.keys(bookingsData[date]).forEach(time => {
                             const booking = bookingsData[date][time];
@@ -773,13 +711,9 @@
                         });
                     });
                     
-                    // Clear existing days off
                     const existingDaysOff = await db.collection('daysOff').get();
-                    existingDaysOff.forEach(doc => {
-                        batch.delete(doc.ref);
-                    });
+                    existingDaysOff.forEach(doc => batch.delete(doc.ref));
                     
-                    // Add current days off
                     daysOffData.forEach(date => {
                         const docRef = db.collection('daysOff').doc(date);
                         batch.set(docRef, { date: date });
@@ -789,7 +723,7 @@
                     console.log('✅ Data saved to Firebase');
                 } catch (error) {
                     console.error('❌ Firebase save error:', error);
-                    saveToLocalStorage(); // Fallback to localStorage
+                    saveToLocalStorage();
                 }
             } else {
                 saveToLocalStorage();
@@ -798,38 +732,28 @@
             updateDisplay();
         }
         
-        // Fallback to localStorage
         function saveToLocalStorage() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
             localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
         }
         
-        // Update display counters
         function updateDisplay() {
             const storedDatesElement = document.getElementById('storedDates');
             const statusElement = document.getElementById('dbStatus');
             const timeElement = document.getElementById('lastSyncTime');
             
-            if (storedDatesElement) {
-                storedDatesElement.textContent = Object.keys(bookingsData).length;
-            }
+            if (storedDatesElement) storedDatesElement.textContent = Object.keys(bookingsData).length;
             
             if (statusElement) {
                 statusElement.textContent = firebaseInitialized ? 'Firebase Connected' : 'Using localStorage';
                 statusElement.style.color = firebaseInitialized ? '#27ae60' : '#f39c12';
             }
             
-            if (timeElement) {
-                timeElement.textContent = new Date().toLocaleTimeString();
-            }
+            if (timeElement) timeElement.textContent = new Date().toLocaleTimeString();
             
-            // Refresh admin panel if user is logged in
-            if (isAdminLoggedIn) {
-                loadAdminBookings();
-            }
+            if (isAdminLoggedIn) loadAdminBookings();
         }
         
-        // Generate time slots
         function generateTimeSlots() {
             const slots = [];
             for (let hour = 9; hour < 19; hour++) {
@@ -840,7 +764,6 @@
             return slots;
         }
         
-        // Load and display time slots
         function loadTimeSlots() {
             selectedDate = document.getElementById('selectedDate').value;
             if (!selectedDate) return;
@@ -850,7 +773,6 @@
             
             container.innerHTML = '';
             
-            // Check if this date is marked as day off
             if (daysOffData.includes(selectedDate)) {
                 container.innerHTML = '<div style="text-align: center; padding: 40px; color: #e74c3c; font-weight: bold; font-size: 1.2em;">🚫 DAY OFF - No bookings available</div>';
                 return;
@@ -873,8 +795,6 @@
                         slot.innerHTML = `${time}<br><strong>BOOKED</strong><br><small>${booking.customerName}</small>`;
                     }
                 } else {
-                    // Show all slots as available, including past slots
-                    // Only allow selection of future slots for today
                     const now = new Date();
                     const today = now.toISOString().split('T')[0];
                     
@@ -883,17 +803,11 @@
                         const slotTime = new Date(selectedDate);
                         slotTime.setHours(hours, minutes, 0, 0);
                         
-                        if (slotTime < now) {
-                            // Past slot - show as available but not selectable
-                            slot.className += ' available';
-                            // No additional content, just the time
-                        } else {
-                            // Future slot - allow selection
-                            slot.className += ' available';
+                        slot.className += ' available';
+                        if (slotTime >= now) {
                             slot.onclick = () => selectTimeSlot(time, slot);
                         }
                     } else {
-                        // Not today - all slots available for selection
                         slot.className += ' available';
                         slot.onclick = () => selectTimeSlot(time, slot);
                     }
@@ -903,7 +817,6 @@
             });
         }
         
-        // Select time slot
         function selectTimeSlot(time, element) {
             document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
             element.classList.add('selected');
@@ -911,10 +824,10 @@
             document.getElementById('bookingForm').classList.remove('hidden');
         }
         
-        // Submit booking
-        function submitBooking() {
-            const name = document.getElementById('customerName').value.trim();
-            const phone = document.getElementById('customerPhone').value.trim();
+        // ─── Submit Booking (now includes EmailJS notification) ───
+        async function submitBooking() {
+            const name    = document.getElementById('customerName').value.trim();
+            const phone   = document.getElementById('customerPhone').value.trim();
             const service = document.getElementById('serviceRequest').value.trim();
             
             if (!name || !phone || !service || !selectedTime) {
@@ -922,27 +835,30 @@
                 return;
             }
             
-            // Check if the selected date is a day off
             if (daysOffData.includes(selectedDate)) {
                 showNotification('customerNotification', '🚫 Sorry, this date is marked as day off. Please select another date.', 'error');
                 return;
             }
             
             const booking = {
-                id: 'BK' + Date.now(),
-                date: selectedDate,
-                time: selectedTime,
-                customerName: name,
-                customerPhone: phone,
+                id            : 'BK' + Date.now(),
+                date          : selectedDate,
+                time          : selectedTime,
+                customerName  : name,
+                customerPhone : phone,
                 serviceRequest: service,
-                status: 'pending',
-                timestamp: new Date().toISOString()
+                status        : 'pending',
+                timestamp     : new Date().toISOString()
             };
             
             if (!bookingsData[selectedDate]) bookingsData[selectedDate] = {};
             bookingsData[selectedDate][selectedTime] = booking;
             
-            saveToStorage();
+            // Save to Firebase / localStorage
+            await saveToStorage();
+
+            // ✉️ Send email notification to owner
+            await sendBookingEmail(booking);
             
             // Clear form
             document.getElementById('customerName').value = '';
@@ -950,20 +866,17 @@
             document.getElementById('serviceRequest').value = '';
             document.getElementById('bookingForm').classList.add('hidden');
             
-            // Refresh display to show the pending booking
             loadTimeSlots();
             
-            showNotification('customerNotification', '✅ Booking submitted! Status: PENDING - waiting for owner confirmation.', 'success');
+            showNotification('customerNotification', '✅ Booking submitted! Status: PENDING — waiting for owner confirmation.', 'success');
         }
         
-        // Cancel booking (customer)
         function cancelCustomerBooking() {
             document.getElementById('bookingForm').classList.add('hidden');
             document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
             selectedTime = '';
         }
         
-        // Show customer view
         function showCustomerView() {
             document.getElementById('customerView').classList.remove('hidden');
             document.getElementById('adminView').classList.add('hidden');
@@ -972,7 +885,6 @@
             loadTimeSlots();
         }
         
-        // Show admin view
         function showAdminView() {
             document.getElementById('customerView').classList.add('hidden');
             document.getElementById('adminView').classList.remove('hidden');
@@ -984,13 +896,13 @@
                 document.getElementById('adminPanel').classList.remove('hidden');
                 loadAdminBookings();
                 loadDayOffList();
+                updateEmailJSStatusBadge();
             } else {
                 document.getElementById('adminLogin').classList.remove('hidden');
                 document.getElementById('adminPanel').classList.add('hidden');
             }
         }
         
-        // Admin login
         function adminLogin() {
             const password = document.getElementById('adminPassword').value;
             
@@ -1003,6 +915,7 @@
                 loadAdminBookings();
                 loadDayOffList();
                 updateDisplay();
+                updateEmailJSStatusBadge();
                 showNotification('adminPanelNotification', '✅ Login successful!', 'success');
             } else {
                 showNotification('adminNotification', '❌ Incorrect password.', 'error');
@@ -1010,7 +923,6 @@
             }
         }
         
-        // Load admin bookings
         function loadAdminBookings() {
             const allBookings = [];
             
@@ -1024,53 +936,37 @@
                 }
             });
             
-            const pendingBookings = allBookings.filter(b => b.status === 'pending');
+            const pendingBookings   = allBookings.filter(b => b.status === 'pending');
             const confirmedBookings = allBookings.filter(b => b.status === 'confirmed');
             const cancelledBookings = allBookings.filter(b => b.status === 'cancelled' || b.status === 'declined');
             
-            // Update booking stats
             updateBookingStats(pendingBookings.length, confirmedBookings.length, cancelledBookings.length);
-            
-            // Update date navigation
             updateDateNavigation(allBookings);
             
-            // Sort pending bookings by date and time
             pendingBookings.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
             
-            // Pending bookings
             const pendingContainer = document.getElementById('pendingBookings');
             if (pendingContainer) {
                 if (pendingBookings.length === 0) {
                     pendingContainer.innerHTML = '<p>No pending bookings.</p>';
                 } else {
-                    // Group pending bookings by date
                     const pendingByDate = {};
                     pendingBookings.forEach(booking => {
-                        if (!pendingByDate[booking.date]) {
-                            pendingByDate[booking.date] = [];
-                        }
+                        if (!pendingByDate[booking.date]) pendingByDate[booking.date] = [];
                         pendingByDate[booking.date].push(booking);
                     });
                     
-                    // Generate HTML for pending bookings grouped by date
                     let pendingHTML = '';
                     Object.keys(pendingByDate).forEach(date => {
                         const dateObj = new Date(date + 'T00:00:00');
-                        const formattedDate = dateObj.toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        
-                        // Check if this is today's date
+                        const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                         const today = new Date().toISOString().split('T')[0];
                         const isToday = date === today;
                         
                         pendingHTML += `
                             <div class="date-group${isToday ? '' : ' collapsed'}" id="pending-date-${date}">
                                 <h4 onclick="toggleDateGroup('pending-date-${date}')"${isToday ? '' : ' class="collapsed"'}>
-                                    ${formattedDate} 
+                                    ${formattedDate}
                                     <span style="float: right; font-size: 0.8em; background: #f39c12; padding: 2px 8px; border-radius: 10px; color: white;">
                                         ${pendingByDate[date].length} pending
                                     </span>
@@ -1095,69 +991,47 @@
                             `;
                         });
                         
-                        pendingHTML += `
-                                </div>
-                            </div>
-                        `;
+                        pendingHTML += `</div></div>`;
                     });
                     
                     pendingContainer.innerHTML = pendingHTML;
                 }
             }
             
-            // All bookings - sort by date (newest first) then by time
             allBookings.sort((a, b) => {
-                // First sort by date (newest first)
-                const dateComparison = new Date(b.date) - new Date(a.date);
-                if (dateComparison !== 0) {
-                    return dateComparison;
-                }
-                // Then sort by time
-                return new Date('1970/01/01 ' + a.time) - new Date('1970/01/01 ' + b.time);
+                const dateComp = new Date(b.date) - new Date(a.date);
+                return dateComp !== 0 ? dateComp : new Date('1970/01/01 ' + a.time) - new Date('1970/01/01 ' + b.time);
             });
             
-            // All bookings
             const allContainer = document.getElementById('allBookings');
             if (allContainer) {
                 if (allBookings.length === 0) {
                     allContainer.innerHTML = '<p>No bookings yet.</p>';
                 } else {
-                    // Group all bookings by date
                     const allByDate = {};
                     allBookings.forEach(booking => {
-                        if (!allByDate[booking.date]) {
-                            allByDate[booking.date] = [];
-                        }
+                        if (!allByDate[booking.date]) allByDate[booking.date] = [];
                         allByDate[booking.date].push(booking);
                     });
                     
-                    // Generate HTML for all bookings grouped by date (newest first)
                     let allHTML = '';
                     Object.keys(allByDate).sort((a, b) => new Date(b) - new Date(a)).forEach(date => {
                         const dateObj = new Date(date + 'T00:00:00');
-                        const formattedDate = dateObj.toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        
-                        // Check if this is today's date
+                        const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                         const today = new Date().toISOString().split('T')[0];
                         const isToday = date === today;
                         
-                        // Count bookings by status for this date
-                        const dateBookings = allByDate[date];
-                        const datePending = dateBookings.filter(b => b.status === 'pending').length;
-                        const dateConfirmed = dateBookings.filter(b => b.status === 'confirmed').length;
-                        const dateCancelled = dateBookings.filter(b => b.status === 'cancelled' || b.status === 'declined').length;
+                        const dateBookingsList = allByDate[date];
+                        const datePending   = dateBookingsList.filter(b => b.status === 'pending').length;
+                        const dateConfirmed = dateBookingsList.filter(b => b.status === 'confirmed').length;
+                        const dateCancelled = dateBookingsList.filter(b => b.status === 'cancelled' || b.status === 'declined').length;
                         
                         allHTML += `
                             <div class="date-group${isToday ? '' : ' collapsed'}" id="all-date-${date}">
                                 <h4 onclick="toggleDateGroup('all-date-${date}')"${isToday ? '' : ' class="collapsed"'}>
                                     ${formattedDate}
                                     <span style="float: right; font-size: 0.8em;">
-                                        ${datePending > 0 ? `<span style="background: #f39c12; padding: 2px 8px; border-radius: 10px; color: white; margin-right: 5px;">${datePending} pending</span>` : ''}
+                                        ${datePending   > 0 ? `<span style="background: #f39c12; padding: 2px 8px; border-radius: 10px; color: white; margin-right: 5px;">${datePending} pending</span>` : ''}
                                         ${dateConfirmed > 0 ? `<span style="background: #27ae60; padding: 2px 8px; border-radius: 10px; color: white; margin-right: 5px;">${dateConfirmed} confirmed</span>` : ''}
                                         ${dateCancelled > 0 ? `<span style="background: #e74c3c; padding: 2px 8px; border-radius: 10px; color: white;">${dateCancelled} cancelled</span>` : ''}
                                     </span>
@@ -1166,14 +1040,13 @@
                         `;
                         
                         allByDate[date].forEach(booking => {
-                            // Add status-specific styling
-                            let statusClass = '';
-                            if (booking.status === 'pending') statusClass = 'background: #fef9e7; border-left: 4px solid #f39c12;';
-                            else if (booking.status === 'confirmed') statusClass = 'background: #e8f8f1; border-left: 4px solid #27ae60;';
-                            else statusClass = 'background: #fadbd8; border-left: 4px solid #e74c3c;';
+                            let statusStyle = '';
+                            if (booking.status === 'pending')   statusStyle = 'background: #fef9e7; border-left: 4px solid #f39c12;';
+                            else if (booking.status === 'confirmed') statusStyle = 'background: #e8f8f1; border-left: 4px solid #27ae60;';
+                            else statusStyle = 'background: #fadbd8; border-left: 4px solid #e74c3c;';
                             
                             allHTML += `
-                                <div class="booking-item" style="${statusClass}">
+                                <div class="booking-item" style="${statusStyle}">
                                     <div>
                                         <strong>${booking.customerName}</strong><br>
                                         🕐 ${booking.time}<br>
@@ -1184,37 +1057,28 @@
                                     <div style="margin-top: 10px; display: flex; gap: 10px;">
                                         ${booking.status === 'pending' ? 
                                             `<button class="btn confirm" onclick="confirmBooking('${booking.id}')">✅ Confirm</button>
-                                             <button class="btn decline" onclick="declineBooking('${booking.id}')" style="background: #e74c3c;">❌ Decline</button>` : 
-                                            ''}
+                                             <button class="btn decline" onclick="declineBooking('${booking.id}')" style="background: #e74c3c;">❌ Decline</button>` : ''}
                                         ${booking.status === 'confirmed' ? 
-                                            `<button class="btn decline" onclick="cancelConfirmedBooking('${booking.id}')" style="background: #e74c3c;">❌ Cancel Booking</button>` : 
-                                            ''}
+                                            `<button class="btn decline" onclick="cancelConfirmedBooking('${booking.id}')" style="background: #e74c3c;">❌ Cancel Booking</button>` : ''}
                                     </div>
                                 </div>
                             `;
                         });
                         
-                        allHTML += `
-                                </div>
-                            </div>
-                        `;
+                        allHTML += `</div></div>`;
                     });
                     
                     allContainer.innerHTML = allHTML;
                 }
             }
             
-            // Scroll to today's date if it exists
             const today = new Date().toISOString().split('T')[0];
             setTimeout(() => {
                 const todayElement = document.getElementById(`all-date-${today}`);
-                if (todayElement) {
-                    todayElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                if (todayElement) todayElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 500);
         }
         
-        // Update booking statistics
         function updateBookingStats(pendingCount, confirmedCount, cancelledCount) {
             const statsContainer = document.getElementById('bookingStats');
             if (statsContainer) {
@@ -1238,92 +1102,55 @@
             }
         }
         
-        // Update date navigation
         function updateDateNavigation(allBookings) {
             const navContainer = document.getElementById('dateNavigation');
-            if (navContainer) {
-                // Get unique dates and sort them
-                const dates = [...new Set(allBookings.map(b => b.date))].sort();
-                
-                if (dates.length === 0) {
-                    navContainer.innerHTML = '<p>No bookings to navigate to.</p>';
-                    return;
-                }
-                
-                let navHTML = '';
-                dates.forEach(date => {
-                    const dateObj = new Date(date + 'T00:00:00');
-                    const formattedDate = dateObj.toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                    });
-                    
-                    navHTML += `
-                        <div class="date-nav-item" onclick="scrollToDate('${date}')">
-                            ${formattedDate}
-                        </div>
-                    `;
-                });
-                
-                navContainer.innerHTML = navHTML;
+            if (!navContainer) return;
+            
+            const dates = [...new Set(allBookings.map(b => b.date))].sort();
+            
+            if (dates.length === 0) {
+                navContainer.innerHTML = '<p>No bookings to navigate to.</p>';
+                return;
             }
+            
+            navContainer.innerHTML = dates.map(date => {
+                const dateObj = new Date(date + 'T00:00:00');
+                const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return `<div class="date-nav-item" onclick="scrollToDate('${date}')">${formattedDate}</div>`;
+            }).join('');
         }
         
-        // Scroll to a specific date
         function scrollToDate(date) {
             const element = document.getElementById(`all-date-${date}`);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                // Highlight the element temporarily
                 element.style.border = '2px solid #3498db';
-                setTimeout(() => {
-                    element.style.border = 'none';
-                }, 2000);
+                setTimeout(() => element.style.border = 'none', 2000);
             }
         }
         
-        // Toggle date group visibility
         function toggleDateGroup(groupId) {
             const group = document.getElementById(groupId);
             if (!group) return;
             
-            const header = group.querySelector('h4');
+            const header  = group.querySelector('h4');
             const content = group.querySelector('.bookings-content');
-            
             if (!header || !content) return;
             
-            // Toggle the collapsed class on the header
             header.classList.toggle('collapsed');
-            
-            // Toggle the collapsed class on the group
             group.classList.toggle('collapsed');
-            
-            // Toggle the display of the content
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-            } else {
-                content.style.display = 'none';
-            }
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
         }
         
-        // Confirm booking
-        function confirmBooking(bookingId) {
-            updateBookingStatus(bookingId, 'confirmed');
-        }
+        function confirmBooking(bookingId)       { updateBookingStatus(bookingId, 'confirmed'); }
+        function declineBooking(bookingId)        { updateBookingStatus(bookingId, 'declined'); }
         
-        // Decline booking
-        function declineBooking(bookingId) {
-            updateBookingStatus(bookingId, 'declined');
-        }
-        
-        // Cancel confirmed booking (admin)
         function cancelConfirmedBooking(bookingId) {
             if (confirm('⚠️ Are you sure you want to cancel this confirmed booking? This cannot be undone!')) {
                 updateBookingStatus(bookingId, 'cancelled');
             }
         }
         
-        // Update booking status
         function updateBookingStatus(bookingId, newStatus) {
             Object.keys(bookingsData).forEach(date => {
                 if (bookingsData[date]) {
@@ -1337,19 +1164,17 @@
                             
                             saveToStorage();
                             loadAdminBookings();
-                            loadTimeSlots(); // Refresh customer view too
+                            loadTimeSlots();
                             
                             showNotification('adminPanelNotification', 
                                 `✅ Booking ${newStatus === 'confirmed' ? 'confirmed' : newStatus === 'cancelled' ? 'cancelled' : 'declined'}!`, 
                                 'success');
-                            return;
                         }
                     });
                 }
             });
         }
         
-        // Toggle day off
         function toggleDayOff() {
             const dateInput = document.getElementById('dayOffDate');
             const selectedDayOff = dateInput.value;
@@ -1362,18 +1187,11 @@
             const dateIndex = daysOffData.indexOf(selectedDayOff);
             
             if (dateIndex === -1) {
-                // Add day off
                 daysOffData.push(selectedDayOff);
-                
-                // Remove any existing bookings for this date
-                if (bookingsData[selectedDayOff]) {
-                    delete bookingsData[selectedDayOff];
-                }
-                
+                if (bookingsData[selectedDayOff]) delete bookingsData[selectedDayOff];
                 saveToStorage();
                 showNotification('dayOffNotification', '🚫 Day marked as OFF! No bookings will be accepted.', 'success');
             } else {
-                // Remove day off
                 daysOffData.splice(dateIndex, 1);
                 saveToStorage();
                 showNotification('dayOffNotification', '✅ Day off removed! Bookings are now available.', 'success');
@@ -1381,10 +1199,9 @@
             
             dateInput.value = '';
             loadDayOffList();
-            loadTimeSlots(); // Refresh customer view
+            loadTimeSlots();
         }
         
-        // Load and display days off list
         function loadDayOffList() {
             const container = document.getElementById('dayOffList');
             if (!container) return;
@@ -1394,18 +1211,12 @@
                 return;
             }
             
-            // Sort dates
             const sortedDates = [...daysOffData].sort();
             
             container.innerHTML = '<h4>Scheduled Days Off:</h4>' + 
                 sortedDates.map(date => {
-                    const dateObj = new new Date(date + 'T00:00:00');
-                    const formattedDate = dateObj.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
+                    const dateObj = new Date(date + 'T00:00:00');
+                    const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                     
                     return `
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin: 5px 0; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #e74c3c;">
@@ -1416,7 +1227,6 @@
                 }).join('');
         }
         
-        // Remove specific day off
         function removeDayOff(date) {
             const index = daysOffData.indexOf(date);
             if (index > -1) {
@@ -1428,7 +1238,6 @@
             }
         }
         
-        // Admin panel functions
         function testConnection() {
             if (firebaseInitialized) {
                 showNotification('sheetsNotification', '✅ Firebase connection successful! Real-time sync enabled.', 'success');
@@ -1437,8 +1246,8 @@
             }
         }
         
-        function manualSync() {
-            loadFromStorage();
+        async function manualSync() {
+            await loadFromStorage();
             loadTimeSlots();
             if (isAdminLoggedIn) {
                 loadAdminBookings();
@@ -1454,20 +1263,14 @@
                 daysOffData = [];
                 
                 if (firebaseInitialized) {
-                    // Clear Firebase data
                     db.collection('bookings').get().then(snapshot => {
                         const batch = db.batch();
-                        snapshot.forEach(doc => {
-                            batch.delete(doc.ref);
-                        });
+                        snapshot.forEach(doc => batch.delete(doc.ref));
                         return batch.commit();
-                    }).then(() => {
-                        return db.collection('daysOff').get();
-                    }).then(snapshot => {
+                    }).then(() => db.collection('daysOff').get())
+                    .then(snapshot => {
                         const batch = db.batch();
-                        snapshot.forEach(doc => {
-                            batch.delete(doc.ref);
-                        });
+                        snapshot.forEach(doc => batch.delete(doc.ref));
                         return batch.commit();
                     }).then(() => {
                         showNotification('sheetsNotification', '✅ All Firebase data cleared successfully!', 'success');
@@ -1476,7 +1279,6 @@
                         showNotification('sheetsNotification', '❌ Error clearing Firebase data.', 'error');
                     });
                 } else {
-                    // Clear localStorage data
                     localStorage.removeItem(STORAGE_KEY);
                     localStorage.removeItem(STORAGE_KEY + '_daysoff');
                     showNotification('sheetsNotification', '✅ Local data cleared successfully!', 'success');
@@ -1491,9 +1293,8 @@
             }
         }
         
-        // Add event listeners for search inputs
         document.addEventListener('DOMContentLoaded', function() {
-            const pendingSearch = document.getElementById('pendingSearch');
+            const pendingSearch     = document.getElementById('pendingSearch');
             const allBookingsSearch = document.getElementById('allBookingsSearch');
             
             if (pendingSearch) {
@@ -1509,24 +1310,15 @@
             }
         });
         
-        // Filter bookings based on search term
         function filterBookings(containerId, searchTerm) {
             const container = document.getElementById(containerId);
             if (!container) return;
             
-            const bookingItems = container.querySelectorAll('.booking-item');
-            bookingItems.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
+            container.querySelectorAll('.booking-item').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(searchTerm) ? 'block' : 'none';
             });
             
-            // Also filter date groups if all items in a group are hidden
-            const dateGroups = container.querySelectorAll('.date-group');
-            dateGroups.forEach(group => {
+            container.querySelectorAll('.date-group').forEach(group => {
                 const visibleItems = group.querySelectorAll('.booking-item:not([style*="display: none"])');
                 const header = group.querySelector('h4');
                 
@@ -1534,7 +1326,6 @@
                     group.style.display = 'none';
                 } else {
                     group.style.display = 'block';
-                    // Expand the group if filtering is active
                     if (searchTerm) {
                         group.classList.remove('collapsed');
                         if (header) header.classList.remove('collapsed');
