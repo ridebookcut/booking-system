@@ -771,14 +771,6 @@
                         </div>
                         <div class="kanban-cards" id="kanban-confirmed"></div>
                     </div>
-
-                    <div class="kanban-column">
-                        <div class="kanban-header">
-                            ❌ Cancelled
-                            <span class="kanban-count" id="cancelled-count">0</span>
-                        </div>
-                        <div class="kanban-cards" id="kanban-cancelled"></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1198,24 +1190,21 @@
             
             const pendingBookings   = allBookings.filter(b => b.status === 'pending');
             const confirmedBookings = allBookings.filter(b => b.status === 'confirmed');
-            const cancelledBookings = allBookings.filter(b => b.status === 'cancelled' || b.status === 'declined');
             
-            updateBookingStats(pendingBookings.length, confirmedBookings.length, cancelledBookings.length);
+            updateBookingStats(pendingBookings.length, confirmedBookings.length, 0);
             
-            // Sort by date & time
-            [pendingBookings, confirmedBookings, cancelledBookings].forEach(list => {
-                list.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+            // Sort by date & time - NEWEST FIRST
+            [pendingBookings, confirmedBookings].forEach(list => {
+                list.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
             });
             
             // Render Kanban
             renderKanbanColumn('kanban-pending', pendingBookings, 'pending');
             renderKanbanColumn('kanban-confirmed', confirmedBookings, 'confirmed');
-            renderKanbanColumn('kanban-cancelled', cancelledBookings, 'cancelled');
             
             // Update counts
             document.getElementById('pending-count').textContent = pendingBookings.length;
             document.getElementById('confirmed-count').textContent = confirmedBookings.length;
-            document.getElementById('cancelled-count').textContent = cancelledBookings.length;
         }
         
         function renderKanbanColumn(containerId, bookings, status) {
@@ -1232,7 +1221,7 @@
                 const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 
                 return `
-                    <div class="kanban-card ${status}" data-booking-id="${booking.id}" data-search-text="${booking.customerName.toLowerCase()} ${booking.customerPhone.toLowerCase()} ${booking.date}">
+                    <div class="kanban-card ${status}" data-booking-id="${booking.id}" data-booking-date="${booking.date}" data-search-text="${booking.customerName.toLowerCase()} ${booking.customerPhone.toLowerCase()} ${booking.date}">
                         <div class="kanban-card-header">
                             <span class="kanban-card-name">${booking.customerName}</span>
                             <span class="kanban-card-date">${dateStr}</span>
@@ -1261,25 +1250,27 @@
             
             const today = new Date();
             today.setHours(0, 0, 0, 0);
+            const todayStr = today.toISOString().split('T')[0];
             
             document.querySelectorAll('.kanban-card').forEach(card => {
                 const searchText = card.getAttribute('data-search-text') || '';
-                const bookingDate = card.getAttribute('data-booking-id').split('_')[0] || '';
+                const bookingDateStr = card.getAttribute('data-booking-date') || '';
                 
-                let matchSearch = searchText.includes(searchTerm);
+                let matchSearch = searchTerm === '' || searchText.includes(searchTerm);
                 let matchDate = true;
                 
                 if (dateFilter === 'today') {
-                    matchDate = bookingDate === today.toISOString().split('T')[0];
+                    matchDate = bookingDateStr === todayStr;
                 } else if (dateFilter === 'tomorrow') {
                     const tomorrow = new Date(today);
                     tomorrow.setDate(tomorrow.getDate() + 1);
-                    matchDate = bookingDate === tomorrow.toISOString().split('T')[0];
+                    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                    matchDate = bookingDateStr === tomorrowStr;
                 } else if (dateFilter === 'week') {
                     const weekFromNow = new Date(today);
                     weekFromNow.setDate(weekFromNow.getDate() + 7);
-                    const bookingDateObj = new Date(bookingDate + 'T00:00:00');
-                    matchDate = bookingDateObj >= today && bookingDateObj <= weekFromNow;
+                    const bookingDate = new Date(bookingDateStr + 'T00:00:00');
+                    matchDate = bookingDate >= today && bookingDate <= weekFromNow;
                 }
                 
                 card.style.display = (matchSearch && matchDate) ? 'block' : 'none';
@@ -1298,11 +1289,6 @@
                     <div class="stat-card confirmed">
                         <div>CONFIRMED</div>
                         <div class="stat-value">${confirmedCount}</div>
-                        <div>Bookings</div>
-                    </div>
-                    <div class="stat-card cancelled">
-                        <div>CANCELLED</div>
-                        <div class="stat-value">${cancelledCount}</div>
                         <div>Bookings</div>
                     </div>
                 `;
