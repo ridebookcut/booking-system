@@ -21,8 +21,9 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
-    <!-- ✉️ EmailJS SDK -->
+    <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
     <style>
@@ -328,7 +329,7 @@
         
         .bookings-content { margin-left: 10px; }
 
-        /* ─── EmailJS Config Banner ─── */
+        /* EmailJS Config Banner */
         .emailjs-setup-banner {
             background: linear-gradient(135deg, #1a1a2e, #16213e);
             border: 2px solid #e94560;
@@ -391,7 +392,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ─── Kanban Styles ─── */
+        /* Kanban Styles */
         .kanban-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -454,18 +455,9 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        .kanban-card.pending {
-            border-left-color: #f39c12;
-        }
-
-        .kanban-card.confirmed {
-            border-left-color: #27ae60;
-        }
-
-        .kanban-card.cancelled {
-            border-left-color: #e74c3c;
-            opacity: 0.7;
-        }
+        .kanban-card.pending { border-left-color: #f39c12; }
+        .kanban-card.confirmed { border-left-color: #27ae60; }
+        .kanban-card.cancelled { border-left-color: #e74c3c; opacity: 0.7; }
 
         .kanban-card-header {
             display: flex;
@@ -512,32 +504,12 @@
             transition: all 0.2s ease;
         }
 
-        .kanban-btn-confirm {
-            background: #27ae60;
-            color: white;
-        }
-
-        .kanban-btn-confirm:hover {
-            background: #229954;
-        }
-
-        .kanban-btn-decline {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .kanban-btn-decline:hover {
-            background: #c0392b;
-        }
-
-        .kanban-btn-cancel {
-            background: #e67e22;
-            color: white;
-        }
-
-        .kanban-btn-cancel:hover {
-            background: #d35400;
-        }
+        .kanban-btn-confirm { background: #27ae60; color: white; }
+        .kanban-btn-confirm:hover { background: #229954; }
+        .kanban-btn-decline { background: #e74c3c; color: white; }
+        .kanban-btn-decline:hover { background: #c0392b; }
+        .kanban-btn-cancel { background: #e67e22; color: white; }
+        .kanban-btn-cancel:hover { background: #d35400; }
 
         .kanban-empty {
             text-align: center;
@@ -572,45 +544,62 @@
             cursor: pointer;
         }
 
+        /* Login form styling */
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-icon {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .admin-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #334024;
+            color: #d9c1a9;
+            padding: 10px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .admin-bar span { opacity: 0.85; }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover { background: #c0392b; }
+
         @media (max-width: 1024px) {
-            .kanban-container {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            }
-            .kanban-column {
-                max-height: 500px;
-            }
+            .kanban-container { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+            .kanban-column { max-height: 500px; }
         }
 
         @media (max-width: 768px) {
-            .kanban-container {
-                grid-template-columns: 1fr;
-            }
-            .kanban-column {
-                max-height: 400px;
-            }
-            .kanban-filters {
-                flex-direction: column;
-            }
-            .kanban-filter-input {
-                min-width: auto;
-            }
+            .kanban-container { grid-template-columns: 1fr; }
+            .kanban-column { max-height: 400px; }
+            .kanban-filters { flex-direction: column; }
+            .kanban-filter-input { min-width: auto; }
         }
 
-        /* ─── Scrollbar styling ─── */
-        .kanban-cards::-webkit-scrollbar {
-            width: 6px;
-        }
-        .kanban-cards::-webkit-scrollbar-track {
-            background: rgba(51, 64, 36, 0.1);
-            border-radius: 10px;
-        }
-        .kanban-cards::-webkit-scrollbar-thumb {
-            background: rgba(51, 64, 36, 0.4);
-            border-radius: 10px;
-        }
-        .kanban-cards::-webkit-scrollbar-thumb:hover {
-            background: rgba(51, 64, 36, 0.6);
-        }
+        .kanban-cards::-webkit-scrollbar { width: 6px; }
+        .kanban-cards::-webkit-scrollbar-track { background: rgba(51,64,36,0.1); border-radius: 10px; }
+        .kanban-cards::-webkit-scrollbar-thumb { background: rgba(51,64,36,0.4); border-radius: 10px; }
+        .kanban-cards::-webkit-scrollbar-thumb:hover { background: rgba(51,64,36,0.6); }
     </style>
 </head>
 <body>
@@ -648,9 +637,7 @@
                 <label for="selectedDate">Select Date:</label>
                 <input type="date" id="selectedDate" onchange="loadTimeSlots()">
             </div>
-            
             <div id="timeSlots" class="time-slots"></div>
-            
             <div id="bookingForm" class="hidden">
                 <h3>Booking Details</h3>
                 <div class="form-group">
@@ -666,30 +653,47 @@
                     <input type="text" id="serviceRequest" placeholder="e.g., Haircut, Beard trim" required>
                 </div>
                 <button class="btn" onclick="submitBooking()">Submit Booking Request</button>
-                <button class="btn" onclick="cancelCustomerBooking()" style="margin-left: 10px; background: #ccc; color: #333;">Cancel</button>
+                <button class="btn" onclick="cancelCustomerBooking()" style="margin-left: 10px; background: #ccc; color: #333; border-color: #aaa;">Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- Admin View -->
     <div id="adminView" class="hidden">
+        <!-- Login Form -->
         <div class="section" id="adminLogin">
-            <h3>Owner Login</h3>
-            <div id="adminNotification"></div>
-            <div class="form-group">
-                <label for="adminPassword">Password:</label>
-                <input type="password" id="adminPassword" placeholder="Enter admin password">
+            <div class="login-container">
+                <div class="login-icon">🔐</div>
+                <h3 style="text-align:center;">Owner Login</h3>
+                <div id="adminNotification"></div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="adminEmail" placeholder="ridebookcut@gmail.com" value="ridebookcut@gmail.com">
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu:</label>
+                    <input type="password" id="adminPasswordField" placeholder="Nhập mật khẩu"
+                        onkeydown="if(event.key==='Enter') adminLogin()">
+                </div>
+                <button class="btn" onclick="adminLogin()" style="width:100%;">Đăng nhập</button>
             </div>
-            <button class="btn" onclick="adminLogin()">Login</button>
         </div>
-        
+
+        <!-- Admin Panel -->
         <div id="adminPanel" class="hidden">
+
+            <!-- Admin bar -->
+            <div class="admin-bar">
+                <span>👤 Đã đăng nhập: <strong id="loggedInEmail"></strong></span>
+                <button class="logout-btn" onclick="adminLogout()">Đăng xuất</button>
+            </div>
+
             <div class="section">
                 <h3>Booking Dashboard</h3>
                 <div id="bookingStats" class="booking-stats"></div>
                 <div id="sheetsNotification"></div>
 
-                <!-- ✉️ EmailJS Setup Banner -->
+                <!-- EmailJS Setup Banner -->
                 <div class="emailjs-setup-banner">
                     <h4>✉️ Email Notification Setup (EmailJS)</h4>
                     <p style="margin: 0 0 8px 0; font-size: 0.9em; color: #aaa;">Follow these steps once to receive an email every time a booking is placed:</p>
@@ -700,22 +704,18 @@
                             <code>{{booking_id}}</code> &nbsp;<code>{{customer_name}}</code> &nbsp;<code>{{customer_phone}}</code><br>
                             <code>{{service_request}}</code> &nbsp;<code>{{booking_date}}</code> &nbsp;<code>{{booking_time}}</code>
                         </li>
-                        <li>In the HTML file, find the <strong>EmailJS Config</strong> section and replace:<br>
-                            <code>YOUR_PUBLIC_KEY</code> → your EmailJS Public Key<br>
-                            <code>YOUR_SERVICE_ID</code> → your Service ID<br>
-                            <code>YOUR_TEMPLATE_ID</code> → your Template ID
-                        </li>
+                        <li>In the HTML file, find the <strong>EmailJS Config</strong> section and replace the keys.</li>
                     </ol>
                     <div class="emailjs-status-row">
                         <div class="emailjs-dot" id="emailjsDot"></div>
-                        <span id="emailjsStatusText">EmailJS not configured yet — replace the placeholder keys above</span>
+                        <span id="emailjsStatusText">Checking EmailJS config...</span>
                     </div>
                 </div>
 
                 <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
-                    <h4 style="margin: 0 0 10px 0; color: #856404;">🚀 Firebase Cross-Device Sync Ready</h4>
+                    <h4 style="margin: 0 0 10px 0; color: #856404;">🚀 Firebase Cross-Device Sync</h4>
                     <p style="margin: 0; font-size: 14px; color: #856404;">
-                        <strong>Current Status:</strong> <span id="firebaseStatus">Connecting...</span>
+                        <strong>Status:</strong> <span id="firebaseStatus">Connecting...</span>
                     </p>
                 </div>
                 <button class="btn" onclick="testConnection()" style="background: #2ecc71;">Test Sync</button>
@@ -742,8 +742,6 @@
             <div class="section">
                 <h3>Bookings Board</h3>
                 <div id="adminPanelNotification"></div>
-                
-                <!-- Filters -->
                 <div class="kanban-filters">
                     <input type="text" id="kanbanSearch" placeholder="🔍 Search by name or phone..." class="kanban-filter-input" onkeyup="filterKanban()">
                     <select id="kanbanDateFilter" class="kanban-filter-select" onchange="filterKanban()">
@@ -753,8 +751,6 @@
                         <option value="week">This Week</option>
                     </select>
                 </div>
-
-                <!-- Kanban Board -->
                 <div class="kanban-container">
                     <div class="kanban-column">
                         <div class="kanban-header">
@@ -763,7 +759,6 @@
                         </div>
                         <div class="kanban-cards" id="kanban-pending"></div>
                     </div>
-
                     <div class="kanban-column">
                         <div class="kanban-header">
                             ✅ Confirmed
@@ -778,14 +773,13 @@
 
     <script>
         // ============================================================
-        // ✉️  EmailJS Config — REPLACE THESE THREE VALUES
+        // ✉️  EmailJS Config
         // ============================================================
         const EMAILJS_PUBLIC_KEY  = 'oYiYurSHKpgD-7-o-';
         const EMAILJS_SERVICE_ID  = 'service_y30gvki';
         const EMAILJS_TEMPLATE_ID = 'template_vag0nc9';
         // ============================================================
 
-        // Initialise EmailJS
         const emailJSReady = (
             EMAILJS_PUBLIC_KEY  !== 'YOUR_PUBLIC_KEY' &&
             EMAILJS_SERVICE_ID  !== 'YOUR_SERVICE_ID' &&
@@ -796,27 +790,21 @@
             emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
         }
 
-        // Update the status dot in the admin panel when it loads
         function updateEmailJSStatusBadge() {
             const dot  = document.getElementById('emailjsDot');
             const text = document.getElementById('emailjsStatusText');
             if (!dot || !text) return;
             if (emailJSReady) {
                 dot.classList.add('ready');
-                text.textContent = '✅ EmailJS configured — you will receive email notifications for new bookings';
+                text.textContent = '✅ EmailJS configured — bạn sẽ nhận email khi có booking mới';
             } else {
                 dot.classList.remove('ready');
-                text.textContent = 'EmailJS not configured yet — replace the placeholder keys above';
+                text.textContent = 'EmailJS chưa cấu hình — thay các placeholder key ở trên';
             }
         }
 
-        // Send email notification via EmailJS
         async function sendBookingEmail(booking) {
-            if (!emailJSReady) {
-                console.warn('EmailJS not configured — skipping email notification');
-                return;
-            }
-
+            if (!emailJSReady) return;
             const templateParams = {
                 booking_id      : booking.id,
                 customer_name   : booking.customerName,
@@ -827,12 +815,10 @@
                 booking_status  : 'PENDING — awaiting your confirmation',
                 submitted_at    : new Date().toLocaleString()
             };
-
             try {
                 await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-                console.log('✅ Booking notification email sent!');
             } catch (err) {
-                console.error('❌ EmailJS send error:', err);
+                console.error('EmailJS error:', err);
             }
         }
 
@@ -840,38 +826,60 @@
         // Firebase configuration
         // ============================================================
         const firebaseConfig = {
-    apiKey: "AIzaSyCDg8kLnX-tVVaNEdVAoC08pidRtnooKmA",
-    authDomain: "rbk2-ff080.firebaseapp.com",
-    projectId: "rbk2-ff080",
-    storageBucket: "rbk2-ff080.firebasestorage.app",
-    messagingSenderId: "643150919684",
-    appId: "1:643150919684:web:a58033154848365c3bdd51"
-};
-    
+            apiKey: "AIzaSyCDg8kLnX-tVVaNEdVAoC08pidRtnooKmA",
+            authDomain: "rbk2-ff080.firebaseapp.com",
+            projectId: "rbk2-ff080",
+            storageBucket: "rbk2-ff080.firebasestorage.app",
+            messagingSenderId: "643150919684",
+            appId: "1:643150919684:web:a58033154848365c3bdd51"
+        };
 
-        let db;
+        let db, auth;
         let firebaseInitialized = false;
-        
+
         try {
             firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
+            db   = firebase.firestore();
+            auth = firebase.auth();
             firebaseInitialized = true;
-            document.getElementById('firebaseStatus').textContent = 'Connected';
+            document.getElementById('firebaseStatus').textContent = 'Connected ✅';
             document.getElementById('firebaseStatus').style.color = '#27ae60';
         } catch (error) {
-            console.error("Firebase initialization error:", error);
+            console.error("Firebase init error:", error);
             document.getElementById('firebaseStatus').textContent = 'Error - Check config';
             document.getElementById('firebaseStatus').style.color = '#e74c3c';
         }
 
         const STORAGE_KEY = 'rideBookcutBookings';
-        
-        let bookingsData = {};
-        let daysOffData = [];
-        let selectedDate = '';
-        let selectedTime = '';
+
+        let bookingsData  = {};
+        let daysOffData   = [];
+        let selectedDate  = '';
+        let selectedTime  = '';
         let isAdminLoggedIn = false;
-        
+
+        // ─── Auth state listener ───
+        if (firebaseInitialized) {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    isAdminLoggedIn = true;
+                    const emailEl = document.getElementById('loggedInEmail');
+                    if (emailEl) emailEl.textContent = user.email;
+                    // If admin view is visible, show panel
+                    if (!document.getElementById('adminView').classList.contains('hidden')) {
+                        document.getElementById('adminLogin').classList.add('hidden');
+                        document.getElementById('adminPanel').classList.remove('hidden');
+                        loadAdminBookings();
+                        loadDayOffList();
+                        updateDisplay();
+                        updateEmailJSStatusBadge();
+                    }
+                } else {
+                    isAdminLoggedIn = false;
+                }
+            });
+        }
+
         function showNotification(containerId, message, type = 'info') {
             const container = document.getElementById(containerId);
             if (container) {
@@ -879,9 +887,8 @@
                 setTimeout(() => container.innerHTML = '', 5000);
             }
         }
-        
+
         window.onload = async function() {
-            // Timezone Viet Nam UTC+7
             const nowVN = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
             let dateAutoAdvanced = false;
             if (nowVN.getHours() >= 19) {
@@ -894,18 +901,16 @@
             document.getElementById('selectedDate').value = selectedDateStr;
             document.getElementById('selectedDate').min = new Date().toISOString().split('T')[0];
             selectedDate = selectedDateStr;
-            
+
             if (dateAutoAdvanced) {
                 showNotification('customerNotification', '📅 Date automatically set to next day after 7 PM', 'info');
             }
-            
+
             await loadFromStorage();
             loadTimeSlots();
             updateDisplay();
         };
-        
 
-        
         async function loadFromStorage() {
             if (firebaseInitialized) {
                 try {
@@ -916,39 +921,31 @@
                         if (!bookingsData[data.date]) bookingsData[data.date] = {};
                         bookingsData[data.date][data.time] = data;
                     });
-                    
+
                     const daysOffSnapshot = await db.collection('daysOff').get();
                     daysOffData = [];
-                    daysOffSnapshot.forEach(doc => {
-                        daysOffData.push(doc.id);
-                    });
-                    
-                    console.log('✅ Data loaded from Firebase');
+                    daysOffSnapshot.forEach(doc => { daysOffData.push(doc.id); });
                 } catch (error) {
-                    console.error('❌ Firebase load error, falling back to localStorage:', error);
+                    console.error('Firebase load error:', error);
                     loadFromLocalStorage();
                 }
             } else {
                 loadFromLocalStorage();
             }
         }
-        
+
         function loadFromLocalStorage() {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) bookingsData = JSON.parse(stored);
-            
             const storedDaysOff = localStorage.getItem(STORAGE_KEY + '_daysoff');
             if (storedDaysOff) daysOffData = JSON.parse(storedDaysOff);
         }
-        
+
+        // ─── FIXED: chỉ ghi/update từng document, không xóa hết collection ───
         async function saveToStorage() {
             if (firebaseInitialized) {
                 try {
                     const batch = db.batch();
-                    
-                    const existingBookings = await db.collection('bookings').get();
-                    existingBookings.forEach(doc => batch.delete(doc.ref));
-                    
                     Object.keys(bookingsData).forEach(date => {
                         Object.keys(bookingsData[date]).forEach(time => {
                             const booking = bookingsData[date][time];
@@ -956,50 +953,40 @@
                             batch.set(docRef, booking);
                         });
                     });
-                    
-                    const existingDaysOff = await db.collection('daysOff').get();
-                    existingDaysOff.forEach(doc => batch.delete(doc.ref));
-                    
                     daysOffData.forEach(date => {
                         const docRef = db.collection('daysOff').doc(date);
                         batch.set(docRef, { date: date });
                     });
-                    
                     await batch.commit();
-                    console.log('✅ Data saved to Firebase');
                 } catch (error) {
-                    console.error('❌ Firebase save error:', error);
+                    console.error('Firebase save error:', error);
                     saveToLocalStorage();
                 }
             } else {
                 saveToLocalStorage();
             }
-            
             updateDisplay();
         }
-        
+
         function saveToLocalStorage() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(bookingsData));
             localStorage.setItem(STORAGE_KEY + '_daysoff', JSON.stringify(daysOffData));
         }
-        
+
         function updateDisplay() {
-            const storedDatesElement = document.getElementById('storedDates');
-            const statusElement = document.getElementById('dbStatus');
-            const timeElement = document.getElementById('lastSyncTime');
-            
-            if (storedDatesElement) storedDatesElement.textContent = Object.keys(bookingsData).length;
-            
-            if (statusElement) {
-                statusElement.textContent = firebaseInitialized ? 'Firebase Connected' : 'Using localStorage';
-                statusElement.style.color = firebaseInitialized ? '#27ae60' : '#f39c12';
+            const storedDatesEl = document.getElementById('storedDates');
+            const statusEl      = document.getElementById('dbStatus');
+            const timeEl        = document.getElementById('lastSyncTime');
+
+            if (storedDatesEl) storedDatesEl.textContent = Object.keys(bookingsData).length;
+            if (statusEl) {
+                statusEl.textContent  = firebaseInitialized ? 'Firebase Connected' : 'Using localStorage';
+                statusEl.style.color  = firebaseInitialized ? '#27ae60' : '#f39c12';
             }
-            
-            if (timeElement) timeElement.textContent = new Date().toLocaleTimeString();
-            
+            if (timeEl) timeEl.textContent = new Date().toLocaleTimeString();
             if (isAdminLoggedIn) loadAdminBookings();
         }
-        
+
         function generateTimeSlots() {
             const slots = [];
             for (let hour = 9; hour < 19; hour++) {
@@ -1009,28 +996,27 @@
             }
             return slots;
         }
-        
+
         function loadTimeSlots() {
             selectedDate = document.getElementById('selectedDate').value;
             if (!selectedDate) return;
-            
+
             const container = document.getElementById('timeSlots');
             if (!container) return;
-            
             container.innerHTML = '';
-            
+
             if (daysOffData.includes(selectedDate)) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #e74c3c; font-weight: bold; font-size: 1.2em;">🚫 DAY OFF - No bookings available</div>';
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:#e74c3c;font-weight:bold;font-size:1.2em;">🚫 DAY OFF - No bookings available</div>';
                 return;
             }
-            
+
             const dateBookings = bookingsData[selectedDate] || {};
-            
+
             generateTimeSlots().forEach(time => {
                 const slot = document.createElement('div');
                 slot.className = 'time-slot';
                 slot.textContent = time;
-                
+
                 const booking = dateBookings[time];
                 if (booking) {
                     if (booking.status === 'pending') {
@@ -1041,7 +1027,6 @@
                         slot.innerHTML = `${time}<br><strong>BOOKED</strong><br><small>${booking.customerName}</small>`;
                     }
                 } else {
-                    // Timezone Viet Nam UTC+7
                     const nowVN = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
                     const todayVN = nowVN.getFullYear() + '-' +
                         String(nowVN.getMonth() + 1).padStart(2, '0') + '-' +
@@ -1053,7 +1038,6 @@
                         const [hours, minutes] = time.split(':').map(Number);
                         const nowMinutes  = nowVN.getHours() * 60 + nowVN.getMinutes();
                         const slotMinutes = hours * 60 + minutes;
-
                         if (slotMinutes >= nowMinutes) {
                             slot.onclick = () => selectTimeSlot(time, slot);
                         } else {
@@ -1065,34 +1049,32 @@
                         slot.onclick = () => selectTimeSlot(time, slot);
                     }
                 }
-                
                 container.appendChild(slot);
             });
         }
-        
+
         function selectTimeSlot(time, element) {
             document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
             element.classList.add('selected');
             selectedTime = time;
             document.getElementById('bookingForm').classList.remove('hidden');
         }
-        
-        // ─── Submit Booking (now includes EmailJS notification) ───
+
         async function submitBooking() {
             const name    = document.getElementById('customerName').value.trim();
             const phone   = document.getElementById('customerPhone').value.trim();
             const service = document.getElementById('serviceRequest').value.trim();
-            
+
             if (!name || !phone || !service || !selectedTime) {
                 showNotification('customerNotification', '⚠️ Please fill in all fields and select a time slot.', 'error');
                 return;
             }
-            
+
             if (daysOffData.includes(selectedDate)) {
-                showNotification('customerNotification', '🚫 Sorry, this date is marked as day off. Please select another date.', 'error');
+                showNotification('customerNotification', '🚫 Sorry, this date is marked as day off.', 'error');
                 return;
             }
-            
+
             const booking = {
                 id            : 'BK' + Date.now(),
                 date          : selectedDate,
@@ -1103,38 +1085,30 @@
                 status        : 'pending',
                 timestamp     : new Date().toISOString()
             };
-            
+
             if (!bookingsData[selectedDate]) bookingsData[selectedDate] = {};
             bookingsData[selectedDate][selectedTime] = booking;
-            
-            // Save to Firebase / localStorage
-            await saveToStorage();
 
-            // ✉️ Send email notification to owner
+            await saveToStorage();
             await sendBookingEmail(booking);
-            
-            // Clear form
-            document.getElementById('customerName').value = '';
-            document.getElementById('customerPhone').value = '';
-            document.getElementById('serviceRequest').value = '';
+
+            document.getElementById('customerName').value    = '';
+            document.getElementById('customerPhone').value   = '';
+            document.getElementById('serviceRequest').value  = '';
             document.getElementById('bookingForm').classList.add('hidden');
-            
+
             loadTimeSlots();
-            
-            // Update admin panel if already logged in
-            if (isAdminLoggedIn) {
-                loadAdminBookings();
-            }
-            
+            if (isAdminLoggedIn) loadAdminBookings();
+
             showNotification('customerNotification', '✅ Booking submitted! Status: PENDING — waiting for owner confirmation.', 'success');
         }
-        
+
         function cancelCustomerBooking() {
             document.getElementById('bookingForm').classList.add('hidden');
             document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
             selectedTime = '';
         }
-        
+
         function showCustomerView() {
             document.getElementById('customerView').classList.remove('hidden');
             document.getElementById('adminView').classList.add('hidden');
@@ -1142,13 +1116,13 @@
             document.getElementById('adminBtn').classList.remove('active');
             loadTimeSlots();
         }
-        
+
         function showAdminView() {
             document.getElementById('customerView').classList.add('hidden');
             document.getElementById('adminView').classList.remove('hidden');
             document.getElementById('customerBtn').classList.remove('active');
             document.getElementById('adminBtn').classList.add('active');
-            
+
             if (isAdminLoggedIn) {
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
@@ -1160,74 +1134,95 @@
                 document.getElementById('adminPanel').classList.add('hidden');
             }
         }
-        
-        function adminLogin() {
-            const password = document.getElementById('adminPassword').value;
-            
-            if (password === 'ridebookcut123') {
+
+        // ─── Firebase Auth login ───
+        async function adminLogin() {
+            const email    = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPasswordField').value.trim();
+
+            if (!email || !password) {
+                showNotification('adminNotification', '⚠️ Vui lòng nhập email và mật khẩu.', 'error');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 isAdminLoggedIn = true;
+
+                document.getElementById('loggedInEmail').textContent = userCredential.user.email;
+                document.getElementById('adminPasswordField').value  = '';
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
-                document.getElementById('adminPassword').value = '';
-                
+
+                await loadFromStorage();
                 loadAdminBookings();
                 loadDayOffList();
                 updateDisplay();
                 updateEmailJSStatusBadge();
-                showNotification('adminPanelNotification', '✅ Login successful!', 'success');
-            } else {
-                showNotification('adminNotification', '❌ Incorrect password.', 'error');
-                document.getElementById('adminPassword').value = '';
+                showNotification('adminPanelNotification', '✅ Đăng nhập thành công!', 'success');
+            } catch (error) {
+                console.error('Auth error:', error);
+                showNotification('adminNotification', '❌ Email hoặc mật khẩu không đúng.', 'error');
+                document.getElementById('adminPasswordField').value = '';
             }
         }
-        
+
+        // ─── Logout ───
+        async function adminLogout() {
+            try {
+                await auth.signOut();
+            } catch(e) { /* ignore */ }
+            isAdminLoggedIn = false;
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('adminLogin').classList.remove('hidden');
+            document.getElementById('adminEmail').value         = 'ridebookcut@gmail.com';
+            document.getElementById('adminPasswordField').value = '';
+            showCustomerView();
+        }
+
         function loadAdminBookings() {
             const allBookings = [];
-            
             Object.keys(bookingsData).forEach(date => {
                 if (bookingsData[date]) {
                     Object.keys(bookingsData[date]).forEach(time => {
-                        if (bookingsData[date][time]) {
-                            allBookings.push(bookingsData[date][time]);
-                        }
+                        if (bookingsData[date][time]) allBookings.push(bookingsData[date][time]);
                     });
                 }
             });
-            
+
             const pendingBookings   = allBookings.filter(b => b.status === 'pending');
             const confirmedBookings = allBookings.filter(b => b.status === 'confirmed');
-            
-            updateBookingStats(pendingBookings.length, confirmedBookings.length, 0);
-            
-            // Sort by date & time - NEWEST FIRST
+
+            updateBookingStats(pendingBookings.length, confirmedBookings.length);
+
             [pendingBookings, confirmedBookings].forEach(list => {
                 list.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
             });
-            
-            // Render Kanban
-            renderKanbanColumn('kanban-pending', pendingBookings, 'pending');
+
+            renderKanbanColumn('kanban-pending',   pendingBookings,   'pending');
             renderKanbanColumn('kanban-confirmed', confirmedBookings, 'confirmed');
-            
-            // Update counts
-            document.getElementById('pending-count').textContent = pendingBookings.length;
+
+            document.getElementById('pending-count').textContent   = pendingBookings.length;
             document.getElementById('confirmed-count').textContent = confirmedBookings.length;
         }
-        
+
         function renderKanbanColumn(containerId, bookings, status) {
             const container = document.getElementById(containerId);
             if (!container) return;
-            
+
             if (bookings.length === 0) {
                 container.innerHTML = '<div class="kanban-empty">No bookings</div>';
                 return;
             }
-            
+
             container.innerHTML = bookings.map(booking => {
                 const dateObj = new Date(booking.date + 'T00:00:00');
                 const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                
                 return `
-                    <div class="kanban-card ${status}" data-booking-id="${booking.id}" data-booking-date="${booking.date}" data-search-text="${booking.customerName.toLowerCase()} ${booking.customerPhone.toLowerCase()} ${booking.date}">
+                    <div class="kanban-card ${status}"
+                         data-booking-id="${booking.id}"
+                         data-booking-date="${booking.date}"
+                         data-search-text="${booking.customerName.toLowerCase()} ${booking.customerPhone.toLowerCase()} ${booking.date}">
                         <div class="kanban-card-header">
                             <span class="kanban-card-name">${booking.customerName}</span>
                             <span class="kanban-card-date">${dateStr}</span>
@@ -1249,41 +1244,40 @@
                 `;
             }).join('');
         }
-        
+
         function filterKanban() {
             const searchTerm = document.getElementById('kanbanSearch')?.value.toLowerCase() || '';
             const dateFilter = document.getElementById('kanbanDateFilter')?.value || '';
-            
+
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const todayStr = today.toISOString().split('T')[0];
-            
+
             document.querySelectorAll('.kanban-card').forEach(card => {
-                const searchText = card.getAttribute('data-search-text') || '';
+                const searchText     = card.getAttribute('data-search-text') || '';
                 const bookingDateStr = card.getAttribute('data-booking-date') || '';
-                
+
                 let matchSearch = searchTerm === '' || searchText.includes(searchTerm);
-                let matchDate = true;
-                
+                let matchDate   = true;
+
                 if (dateFilter === 'today') {
                     matchDate = bookingDateStr === todayStr;
                 } else if (dateFilter === 'tomorrow') {
                     const tomorrow = new Date(today);
                     tomorrow.setDate(tomorrow.getDate() + 1);
-                    const tomorrowStr = tomorrow.toISOString().split('T')[0];
-                    matchDate = bookingDateStr === tomorrowStr;
+                    matchDate = bookingDateStr === tomorrow.toISOString().split('T')[0];
                 } else if (dateFilter === 'week') {
                     const weekFromNow = new Date(today);
                     weekFromNow.setDate(weekFromNow.getDate() + 7);
                     const bookingDate = new Date(bookingDateStr + 'T00:00:00');
                     matchDate = bookingDate >= today && bookingDate <= weekFromNow;
                 }
-                
+
                 card.style.display = (matchSearch && matchDate) ? 'block' : 'none';
             });
         }
-        
-        function updateBookingStats(pendingCount, confirmedCount, cancelledCount) {
+
+        function updateBookingStats(pendingCount, confirmedCount) {
             const statsContainer = document.getElementById('bookingStats');
             if (statsContainer) {
                 statsContainer.innerHTML = `
@@ -1300,94 +1294,96 @@
                 `;
             }
         }
-        
-        
-        
-        function confirmBooking(bookingId)       { updateBookingStatus(bookingId, 'confirmed'); }
-        function declineBooking(bookingId)        { updateBookingStatus(bookingId, 'declined'); }
-        
+
+        function confirmBooking(bookingId)  { updateBookingStatus(bookingId, 'confirmed'); }
+        function declineBooking(bookingId)  { updateBookingStatus(bookingId, 'declined');  }
+
         function cancelConfirmedBooking(bookingId) {
-            if (confirm('⚠️ Are you sure you want to cancel this confirmed booking? This cannot be undone!')) {
+            if (confirm('⚠️ Bạn chắc chắn muốn huỷ booking này không?')) {
                 updateBookingStatus(bookingId, 'cancelled');
             }
         }
-        
-        function updateBookingStatus(bookingId, newStatus) {
+
+        // ─── FIXED: async + xóa trực tiếp document thay vì xóa cả collection ───
+        async function updateBookingStatus(bookingId, newStatus) {
+            let found = false;
             Object.keys(bookingsData).forEach(date => {
-                if (bookingsData[date]) {
-                    Object.keys(bookingsData[date]).forEach(time => {
-                        if (bookingsData[date][time] && bookingsData[date][time].id === bookingId) {
-                            if (newStatus === 'declined' || newStatus === 'cancelled') {
-                                delete bookingsData[date][time];
-                            } else {
-                                bookingsData[date][time].status = newStatus;
-                            }
-                            
-                            saveToStorage();
-                            loadAdminBookings();
-                            loadTimeSlots();
-                            
-                            showNotification('adminPanelNotification', 
-                                `✅ Booking ${newStatus === 'confirmed' ? 'confirmed' : newStatus === 'cancelled' ? 'cancelled' : 'declined'}!`, 
-                                'success');
+                if (!bookingsData[date]) return;
+                Object.keys(bookingsData[date]).forEach(time => {
+                    const b = bookingsData[date][time];
+                    if (!b || b.id !== bookingId) return;
+                    found = true;
+                    if (newStatus === 'declined' || newStatus === 'cancelled') {
+                        if (firebaseInitialized) {
+                            db.collection('bookings').doc(`${date}_${time}`).delete()
+                                .catch(err => console.error('Delete error:', err));
                         }
-                    });
-                }
+                        delete bookingsData[date][time];
+                    } else {
+                        bookingsData[date][time].status = newStatus;
+                    }
+                });
             });
+
+            if (!found) return;
+            await saveToStorage();
+            loadAdminBookings();
+            loadTimeSlots();
+
+            const msg = newStatus === 'confirmed' ? 'confirmed ✅' :
+                        newStatus === 'cancelled'  ? 'cancelled'   : 'declined ❌';
+            showNotification('adminPanelNotification', `Booking ${msg}!`, 'success');
         }
-        
+
         function toggleDayOff() {
-            const dateInput = document.getElementById('dayOffDate');
+            const dateInput      = document.getElementById('dayOffDate');
             const selectedDayOff = dateInput.value;
-            
+
             if (!selectedDayOff) {
                 showNotification('dayOffNotification', '⚠️ Please select a date first.', 'error');
                 return;
             }
-            
+
             const dateIndex = daysOffData.indexOf(selectedDayOff);
-            
             if (dateIndex === -1) {
                 daysOffData.push(selectedDayOff);
                 if (bookingsData[selectedDayOff]) delete bookingsData[selectedDayOff];
                 saveToStorage();
-                showNotification('dayOffNotification', '🚫 Day marked as OFF! No bookings will be accepted.', 'success');
+                showNotification('dayOffNotification', '🚫 Day marked as OFF!', 'success');
             } else {
                 daysOffData.splice(dateIndex, 1);
                 saveToStorage();
-                showNotification('dayOffNotification', '✅ Day off removed! Bookings are now available.', 'success');
+                showNotification('dayOffNotification', '✅ Day off removed!', 'success');
             }
-            
+
             dateInput.value = '';
             loadDayOffList();
             loadTimeSlots();
         }
-        
+
         function loadDayOffList() {
             const container = document.getElementById('dayOffList');
             if (!container) return;
-            
+
             if (daysOffData.length === 0) {
-                container.innerHTML = '<p style="color: #666; font-style: italic;">No days off scheduled.</p>';
+                container.innerHTML = '<p style="color:#666;font-style:italic;">No days off scheduled.</p>';
                 return;
             }
-            
+
             const sortedDates = [...daysOffData].sort();
-            
-            container.innerHTML = '<h4>Scheduled Days Off:</h4>' + 
+            container.innerHTML = '<h4>Scheduled Days Off:</h4>' +
                 sortedDates.map(date => {
-                    const dateObj = new Date(date + 'T00:00:00');
+                    const dateObj       = new Date(date + 'T00:00:00');
                     const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                    
                     return `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin: 5px 0; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #e74c3c;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;margin:5px 0;background:#f8f9fa;border-radius:5px;border-left:4px solid #e74c3c;">
                             <span>🚫 ${formattedDate}</span>
-                            <button class="btn" style="padding: 5px 10px; font-size: 12px; background: #dc3545;" onclick="removeDayOff('${date}')">Remove</button>
+                            <button class="btn" style="padding:5px 10px;font-size:12px;background:#dc3545;" onclick="removeDayOff('${date}')">Remove</button>
                         </div>
                     `;
                 }).join('');
         }
-        
+
         function removeDayOff(date) {
             const index = daysOffData.indexOf(date);
             if (index > -1) {
@@ -1398,15 +1394,15 @@
                 loadTimeSlots();
             }
         }
-        
+
         function testConnection() {
             if (firebaseInitialized) {
-                showNotification('sheetsNotification', '✅ Firebase connection successful! Real-time sync enabled.', 'success');
+                showNotification('sheetsNotification', '✅ Firebase connection successful!', 'success');
             } else {
-                showNotification('sheetsNotification', '⚠️ Firebase not configured. Using localStorage instead.', 'info');
+                showNotification('sheetsNotification', '⚠️ Firebase not configured. Using localStorage.', 'info');
             }
         }
-        
+
         async function manualSync() {
             await loadFromStorage();
             loadTimeSlots();
@@ -1417,12 +1413,12 @@
             updateDisplay();
             showNotification('sheetsNotification', '✅ Manual sync completed!', 'success');
         }
-        
+
         function clearLocalData() {
-            if (confirm('⚠️ Are you sure you want to clear ALL booking data? This cannot be undone!')) {
+            if (confirm('⚠️ Bạn chắc chắn muốn xóa TẤT CẢ dữ liệu? Không thể hoàn tác!')) {
                 bookingsData = {};
-                daysOffData = [];
-                
+                daysOffData  = [];
+
                 if (firebaseInitialized) {
                     db.collection('bookings').get().then(snapshot => {
                         const batch = db.batch();
@@ -1434,7 +1430,7 @@
                         snapshot.forEach(doc => batch.delete(doc.ref));
                         return batch.commit();
                     }).then(() => {
-                        showNotification('sheetsNotification', '✅ All Firebase data cleared successfully!', 'success');
+                        showNotification('sheetsNotification', '✅ All Firebase data cleared!', 'success');
                     }).catch(error => {
                         console.error('Error clearing Firebase data:', error);
                         showNotification('sheetsNotification', '❌ Error clearing Firebase data.', 'error');
@@ -1442,21 +1438,14 @@
                 } else {
                     localStorage.removeItem(STORAGE_KEY);
                     localStorage.removeItem(STORAGE_KEY + '_daysoff');
-                    showNotification('sheetsNotification', '✅ Local data cleared successfully!', 'success');
+                    showNotification('sheetsNotification', '✅ Local data cleared!', 'success');
                 }
-                
+
                 loadTimeSlots();
-                if (isAdminLoggedIn) {
-                    loadAdminBookings();
-                    loadDayOffList();
-                }
+                if (isAdminLoggedIn) { loadAdminBookings(); loadDayOffList(); }
                 updateDisplay();
             }
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Kanban filter is handled by onchange attributes in HTML
-        });
     </script>
 </body>
 </html>
