@@ -1074,17 +1074,12 @@ async function sendAIMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
-if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
-    appendChatMsg('assistant', '⚠️ **Chưa cấu hình API key!**\n\nVui lòng mở file HTML, tìm dòng:\n`const GEMINI_API_KEY = \'YOUR_GEMINI_API_KEY_HERE\'`\n\nVà thay bằng API key miễn phí từ **aistudio.google.com/apikey**\n\n_Lưu ý: Chỉ dùng trên môi trường private, không deploy public với API key exposed._');
-        return;
-    }
-
     input.value = '';
     btn.disabled = true;
     appendChatMsg('user', msg);
     showTyping();
 
-    const systemPrompt = `Bạn là AI assistant của tiệm tóc Ride Bookcut (barbershop). Bạn giúp chủ tiệm quản lý booking, phân tích lịch, đề xuất hành động, và tổng hợp thông tin. Hãy trả lời bằng tiếng Việt, ngắn gọn súc tích, thực tế. Sử dụng emoji phù hợp. Dữ liệu booking thực tế hiện tại:\n\n${buildBookingContext()}`;
+    const systemPrompt = `Bạn là Tro em anh Ree - AI Assistant của tiệm tóc Ride Bookcut (barbershop). Bạn giúp chủ tiệm quản lý booking, phân tích lịch, đề xuất hành động, và tổng hợp thông tin. Hãy trả lời bằng tiếng Việt, ngắn gọn súc tích, thực tế. Sử dụng emoji phù hợp. Dữ liệu booking thực tế hiện tại:\n\n${buildBookingContext()}`;
 
     aiChatHistory.push({ role: 'user', content: msg });
 
