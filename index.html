@@ -612,7 +612,7 @@ if (emailJSReady) emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 //     Lấy key miễn phí tại: https://aistudio.google.com/apikey
 //     ⚠️ CHỈ dùng trên môi trường private/localhost, không expose public!
 // ============================================================
-const GEMINI_API_KEY = 'AIzaSyBu5DBK5RQXz2OZu4uUbB61vbwiqtAiVeA';
+const GEMINI_API_KEY = 'AIzaSyDUD4_iCC9hAayDbsT5Yk8se1PDZX9NlKQ';
 
 // ============================================================
 // Firebase configuration
@@ -1074,7 +1074,7 @@ async function sendAIMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
-    if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
+    if (GEMINI_API_KEY === 'AIzaSyDUD4_iCC9hAayDbsT5Yk8se1PDZX9NlKQ') {
         appendChatMsg('assistant', '⚠️ **Chưa cấu hình API key!**\n\nVui lòng mở file HTML, tìm dòng:\n`const GEMINI_API_KEY = \'YOUR_GEMINI_API_KEY_HERE\'`\n\nVà thay bằng API key miễn phí từ **aistudio.google.com/apikey**\n\n_Lưu ý: Chỉ dùng trên môi trường private, không deploy public với API key exposed._');
         return;
     }
