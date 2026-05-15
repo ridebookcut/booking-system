@@ -11,10 +11,8 @@
     <meta property="og:url" content="https://ridebookcut.github.io/booking-system/">
     <meta property="og:type" content="website">
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
@@ -62,26 +60,17 @@
             justify-content: space-between;
         }
         .header-left { display: flex; align-items: center; gap: 20px; }
-        .logo img {
-            width: 70px; height: 70px; border-radius: 50%;
-            object-fit: cover; border: 3px solid #d9c1a9;
-        }
+        .logo img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #d9c1a9; }
         .header h1 { margin: 0; font-size: 2em; color: #d9c1a9; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
         .header p { margin: 4px 0 0; color: #c5ae96; font-size: 0.9em; }
         .ai-badge {
             background: linear-gradient(135deg, var(--ai-accent), var(--ai-accent-dim));
-            color: #fff;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: bold;
-            letter-spacing: 0.5px;
+            color: #fff; padding: 8px 18px; border-radius: 20px;
+            font-size: 0.85em; font-weight: bold; letter-spacing: 0.5px;
             box-shadow: 0 2px 10px rgba(126,179,86,0.4);
         }
 
-        .mode-selector {
-            display: flex; justify-content: center; gap: 15px; margin-bottom: 25px;
-        }
+        .mode-selector { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; }
         .mode-btn {
             padding: 12px 28px;
             background: linear-gradient(135deg, #d9c1a9, #c5ae96);
@@ -97,214 +86,97 @@
         .section {
             background: rgba(217, 193, 169, 0.95);
             padding: 25px; border-radius: 15px; margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            border: 2px solid #334024;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 2px solid #334024;
         }
         .section h3 {
             margin-top: 0; color: #334024;
-            border-bottom: 3px solid #334024; padding-bottom: 10px;
-            font-size: 1.3em;
+            border-bottom: 3px solid #334024; padding-bottom: 10px; font-size: 1.3em;
         }
 
-        /* === AI ASSISTANT PANEL === */
+        /* === AI PANEL === */
         .ai-panel {
-            background: var(--ai-bg);
-            border: 2px solid var(--ai-border);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 20px;
+            background: var(--ai-bg); border: 2px solid var(--ai-border);
+            border-radius: 16px; overflow: hidden; margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
-
         .ai-panel-header {
             background: linear-gradient(135deg, var(--ai-panel), #1a1f14);
-            border-bottom: 1px solid var(--ai-border);
-            padding: 16px 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            border-bottom: 1px solid var(--ai-border); padding: 16px 22px;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .ai-panel-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--ai-text);
-            font-weight: bold;
-            font-size: 1.1em;
-        }
+        .ai-panel-title { display: flex; align-items: center; gap: 12px; color: var(--ai-text); font-weight: bold; font-size: 1.1em; }
         .ai-icon {
             width: 36px; height: 36px;
             background: linear-gradient(135deg, var(--ai-accent), var(--ai-accent-dim));
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
-            box-shadow: 0 0 12px rgba(126,179,86,0.3);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; box-shadow: 0 0 12px rgba(126,179,86,0.3);
         }
-        .ai-status {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 0.8em; color: var(--ai-text-dim);
-        }
+        .ai-status { display: flex; align-items: center; gap: 8px; font-size: 0.8em; color: var(--ai-text-dim); }
         .ai-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: var(--ai-accent);
+            width: 8px; height: 8px; border-radius: 50%; background: var(--ai-accent);
             animation: pulse 2s ease-in-out infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.85); }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
 
         .ai-quick-actions {
-            padding: 14px 22px;
-            border-bottom: 1px solid var(--ai-border);
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            background: var(--ai-panel);
+            padding: 14px 22px; border-bottom: 1px solid var(--ai-border);
+            display: flex; gap: 8px; flex-wrap: wrap; background: var(--ai-panel);
         }
         .quick-btn {
-            padding: 7px 14px;
-            background: rgba(126,179,86,0.15);
-            border: 1px solid var(--ai-border);
-            border-radius: 20px;
-            color: var(--ai-text-dim);
-            font-size: 0.8em;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            padding: 7px 14px; background: rgba(126,179,86,0.15);
+            border: 1px solid var(--ai-border); border-radius: 20px;
+            color: var(--ai-text-dim); font-size: 0.8em; cursor: pointer; transition: all 0.2s; white-space: nowrap;
         }
-        .quick-btn:hover {
-            background: rgba(126,179,86,0.3);
-            color: var(--ai-text);
-            border-color: var(--ai-accent);
-        }
+        .quick-btn:hover { background: rgba(126,179,86,0.3); color: var(--ai-text); border-color: var(--ai-accent); }
 
         .ai-chat {
-            height: 380px;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            background: var(--ai-bg);
+            height: 380px; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 14px; background: var(--ai-bg);
         }
         .ai-chat::-webkit-scrollbar { width: 5px; }
         .ai-chat::-webkit-scrollbar-track { background: var(--ai-panel); }
         .ai-chat::-webkit-scrollbar-thumb { background: var(--ai-border); border-radius: 5px; }
 
-        .chat-msg {
-            display: flex;
-            gap: 10px;
-            animation: msgIn 0.3s ease;
-            max-width: 85%;
-        }
-        @keyframes msgIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .chat-msg { display: flex; gap: 10px; animation: msgIn 0.3s ease; max-width: 85%; }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
         .chat-msg.assistant { align-self: flex-start; }
 
-        .msg-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; flex-shrink: 0;
-        }
-        .msg-avatar.ai-av {
-            background: linear-gradient(135deg, var(--ai-accent), var(--ai-accent-dim));
-            font-size: 14px;
-        }
-        .msg-avatar.user-av {
-            background: var(--green-dark);
-            border: 1px solid var(--cream-mid);
-            font-size: 14px;
-        }
+        .msg-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .msg-avatar.ai-av { background: linear-gradient(135deg, var(--ai-accent), var(--ai-accent-dim)); font-size: 14px; }
+        .msg-avatar.user-av { background: var(--green-dark); border: 1px solid var(--cream-mid); font-size: 14px; }
 
-        .msg-bubble {
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 0.88em;
-            line-height: 1.6;
-            max-width: 100%;
-        }
-        .assistant .msg-bubble {
-            background: var(--ai-bot-bubble);
-            color: var(--ai-text);
-            border: 1px solid var(--ai-border);
-            border-top-left-radius: 4px;
-        }
-        .user .msg-bubble {
-            background: var(--ai-user-bubble);
-            color: var(--cream-light);
-            border: 1px solid var(--green-light);
-            border-top-right-radius: 4px;
-        }
+        .msg-bubble { padding: 12px 16px; border-radius: 12px; font-size: 0.88em; line-height: 1.6; max-width: 100%; }
+        .assistant .msg-bubble { background: var(--ai-bot-bubble); color: var(--ai-text); border: 1px solid var(--ai-border); border-top-left-radius: 4px; }
+        .user .msg-bubble { background: var(--ai-user-bubble); color: var(--cream-light); border: 1px solid var(--green-light); border-top-right-radius: 4px; }
         .msg-bubble strong { color: var(--ai-accent); }
-        .msg-bubble .stat-line {
-            display: flex; justify-content: space-between;
-            padding: 4px 0; border-bottom: 1px solid var(--ai-border);
-            font-size: 0.92em;
-        }
-        .msg-bubble .stat-line:last-child { border-bottom: none; }
 
-        .typing-indicator {
-            display: flex; gap: 4px; padding: 14px 16px;
-            background: var(--ai-bot-bubble); border-radius: 12px; border-top-left-radius: 4px;
-            border: 1px solid var(--ai-border); width: fit-content;
-        }
-        .typing-dot {
-            width: 7px; height: 7px; border-radius: 50%;
-            background: var(--ai-text-dim);
-            animation: typing 1.2s ease-in-out infinite;
-        }
+        .typing-indicator { display: flex; gap: 4px; padding: 14px 16px; background: var(--ai-bot-bubble); border-radius: 12px; border-top-left-radius: 4px; border: 1px solid var(--ai-border); width: fit-content; }
+        .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ai-text-dim); animation: typing 1.2s ease-in-out infinite; }
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typing {
-            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
-            40% { transform: scale(1.1); opacity: 1; }
-        }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; } 40% { transform: scale(1.1); opacity: 1; } }
 
-        .ai-input-area {
-            display: flex;
-            gap: 10px;
-            padding: 16px 20px;
-            background: var(--ai-panel);
-            border-top: 1px solid var(--ai-border);
-        }
+        .ai-input-area { display: flex; gap: 10px; padding: 16px 20px; background: var(--ai-panel); border-top: 1px solid var(--ai-border); }
         #aiInput {
-            flex: 1;
-            background: var(--ai-bg);
-            border: 1px solid var(--ai-border);
-            border-radius: 10px;
-            color: var(--ai-text);
-            padding: 10px 16px;
-            font-size: 0.9em;
-            outline: none;
-            transition: border-color 0.2s;
+            flex: 1; background: var(--ai-bg); border: 1px solid var(--ai-border);
+            border-radius: 10px; color: var(--ai-text); padding: 10px 16px;
+            font-size: 0.9em; outline: none; transition: border-color 0.2s;
         }
         #aiInput:focus { border-color: var(--ai-accent); }
         #aiInput::placeholder { color: var(--ai-text-dim); }
         #aiSendBtn {
             padding: 10px 20px;
             background: linear-gradient(135deg, var(--ai-accent), var(--ai-accent-dim));
-            border: none; border-radius: 10px;
-            color: #fff; font-weight: bold; font-size: 0.9em;
+            border: none; border-radius: 10px; color: #fff; font-weight: bold; font-size: 0.9em;
             cursor: pointer; transition: all 0.2s;
         }
         #aiSendBtn:hover { opacity: 0.85; transform: translateY(-1px); }
         #aiSendBtn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-        /* === BOOKING BOARD === */
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 12px; margin-top: 18px;
-        }
-        .time-slot {
-            padding: 12px 8px; border: 2px solid #ddd;
-            border-radius: 8px; text-align: center;
-            cursor: pointer; transition: all 0.3s; background: white; font-weight: bold;
-        }
+        /* === BOOKING === */
+        .time-slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-top: 18px; }
+        .time-slot { padding: 12px 8px; border: 2px solid #ddd; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; font-weight: bold; }
         .time-slot.available { border-color: #334024; background: rgba(217,193,169,0.3); color: #334024; }
         .time-slot.available:hover { background: #334024; color: #d9c1a9; transform: translateY(-2px); }
         .time-slot.pending { border-color: #f39c12; background: #fef9e7; cursor: not-allowed; }
@@ -313,25 +185,17 @@
 
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; margin-bottom: 7px; font-weight: bold; color: #334024; }
-        .form-group input {
-            width: 100%; padding: 10px; border: 2px solid #ddd;
-            border-radius: 5px; font-size: 14px;
-        }
+        .form-group input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; }
 
         .btn {
             padding: 11px 22px;
             background: linear-gradient(135deg, #334024, #2a3520);
             color: #d9c1a9; border: 2px solid #d9c1a9;
-            border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold;
-            transition: all 0.3s;
+            border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; transition: all 0.3s;
         }
         .btn:hover { background: linear-gradient(135deg, #d9c1a9, #c5ae96); color: #334024; transform: translateY(-1px); }
 
-        .notification {
-            padding: 13px; margin: 12px 0; border-radius: 8px;
-            font-weight: bold; text-align: center;
-            animation: fadeIn 0.4s ease;
-        }
+        .notification { padding: 13px; margin: 12px 0; border-radius: 8px; font-weight: bold; text-align: center; animation: fadeIn 0.4s ease; }
         .notification.success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
         .notification.error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
         .notification.info { background: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
@@ -371,21 +235,6 @@
         .kanban-filter-input { flex: 1; min-width: 180px; padding: 9px 12px; border: 2px solid #334024; border-radius: 8px; font-size: 13px; }
         .kanban-filter-select { padding: 9px 12px; border: 2px solid #334024; border-radius: 8px; font-size: 13px; background: white; color: #334024; cursor: pointer; }
 
-        .day-off-btn { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-
-        /* Supabase migration note */
-        .migration-note {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 2px solid #4fc3f7;
-            border-radius: 12px;
-            padding: 18px 22px;
-            margin-bottom: 18px;
-            color: #eee;
-        }
-        .migration-note h4 { margin: 0 0 10px; color: #4fc3f7; }
-        .migration-note ol { margin: 8px 0 0; padding-left: 18px; font-size: 0.88em; line-height: 1.9; color: #bbb; }
-        .migration-note code { background: rgba(79,195,247,0.15); color: #4fc3f7; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.88em; }
-
         .hidden { display: none; }
 
         @media (max-width: 768px) {
@@ -401,8 +250,7 @@
 <div class="header">
     <div class="header-left">
         <div class="logo">
-            <img src="https://ridebookcut.github.io/booking-system/logo.jpg"
-                onerror="this.style.display='none'" alt="Ride Bookcut">
+            <img src="https://ridebookcut.github.io/booking-system/logo.jpg" onerror="this.style.display='none'" alt="Ride Bookcut">
         </div>
         <div>
             <h1>Ride Bookcut</h1>
@@ -417,7 +265,7 @@
     <button class="mode-btn" id="adminBtn" onclick="showAdminView()">Owner Panel</button>
 </div>
 
-<!-- ========== CUSTOMER VIEW ========== -->
+<!-- CUSTOMER VIEW -->
 <div id="customerView">
     <div class="section">
         <h3>Book Your Appointment</h3>
@@ -429,53 +277,36 @@
         <div id="timeSlots" class="time-slots"></div>
         <div id="bookingForm" class="hidden">
             <h3>Booking Details</h3>
-            <div class="form-group">
-                <label>Your Name:</label>
-                <input type="text" id="customerName" required>
-            </div>
-            <div class="form-group">
-                <label>Phone Number:</label>
-                <input type="tel" id="customerPhone" required>
-            </div>
-            <div class="form-group">
-                <label>Service Requested:</label>
-                <input type="text" id="serviceRequest" placeholder="e.g., Haircut, Beard trim" required>
-            </div>
+            <div class="form-group"><label>Your Name:</label><input type="text" id="customerName" required></div>
+            <div class="form-group"><label>Phone Number:</label><input type="tel" id="customerPhone" required></div>
+            <div class="form-group"><label>Service Requested:</label><input type="text" id="serviceRequest" placeholder="e.g., Haircut, Beard trim" required></div>
             <button class="btn" onclick="submitBooking()">Submit Booking Request</button>
             <button class="btn" onclick="cancelCustomerBooking()" style="margin-left:10px;background:#ccc;color:#333;border-color:#aaa;">Cancel</button>
         </div>
     </div>
 </div>
 
-<!-- ========== ADMIN VIEW ========== -->
+<!-- ADMIN VIEW -->
 <div id="adminView" class="hidden">
 
-    <!-- LOGIN -->
     <div class="section" id="adminLogin">
         <div class="login-container">
             <div style="text-align:center;font-size:2.5em;margin-bottom:10px">🔐</div>
             <h3 style="text-align:center;">Owner Login</h3>
             <div id="adminNotification"></div>
-            <div class="form-group">
-                <label>Email:</label>
-                <input type="email" id="adminEmail" placeholder="Enter your email">
-            </div>
-            <div class="form-group">
-                <label>Password:</label>
-                <input type="password" id="adminPasswordField" placeholder="Password" onkeydown="if(event.key==='Enter') adminLogin()">
-            </div>
+            <div class="form-group"><label>Email:</label><input type="email" id="adminEmail" placeholder="Enter your email"></div>
+            <div class="form-group"><label>Password:</label><input type="password" id="adminPasswordField" placeholder="Password" onkeydown="if(event.key==='Enter') adminLogin()"></div>
             <button class="btn" onclick="adminLogin()" style="width:100%">Đăng nhập</button>
         </div>
     </div>
 
-    <!-- PANEL -->
     <div id="adminPanel" class="hidden">
         <div class="admin-bar">
             <span>👤 Đã đăng nhập: <strong id="loggedInEmail"></strong></span>
             <button class="logout-btn" onclick="adminLogout()">Đăng xuất</button>
         </div>
 
-        <!-- ===== AI ASSISTANT ===== -->
+        <!-- AI ASSISTANT -->
         <div class="ai-panel">
             <div class="ai-panel-header">
                 <div class="ai-panel-title">
@@ -485,12 +316,8 @@
                         <div style="font-size:0.75em;color:var(--ai-text-dim);font-weight:normal">Phân tích • Gợi ý • Tổng hợp lịch</div>
                     </div>
                 </div>
-                <div class="ai-status">
-                    <div class="ai-dot"></div>
-                    <span>Gemini 2.0 Flash</span>
-                </div>
+                <div class="ai-status"><div class="ai-dot"></div><span>Mistral AI</span></div>
             </div>
-
             <div class="ai-quick-actions">
                 <button class="quick-btn" onclick="sendQuickPrompt('Tổng hợp tình trạng booking hôm nay cho tôi')">📊 Tổng hợp hôm nay</button>
                 <button class="quick-btn" onclick="sendQuickPrompt('Liệt kê tất cả booking đang pending và gợi ý tôi có nên confirm không')">⏳ Xem pending</button>
@@ -499,12 +326,11 @@
                 <button class="quick-btn" onclick="sendQuickPrompt('Doanh thu ước tính hôm nay nếu giá trung bình 150k/lượt')">💰 Ước tính doanh thu</button>
                 <button class="quick-btn" onclick="sendQuickPrompt('Có booking nào bị trùng giờ hoặc bất thường không?')">⚠️ Kiểm tra xung đột</button>
             </div>
-
             <div class="ai-chat" id="aiChat">
                 <div class="chat-msg assistant">
                     <div class="msg-avatar ai-av">✦</div>
                     <div class="msg-bubble">
-                        Xin chào! Tôi là AI assistant của <strong>Ride Bookcut</strong>. Tôi có thể giúp bạn:<br><br>
+                        Xin chào! Tôi là <strong>Trợ lý AI Ride Bookcut</strong>. Tôi có thể giúp bạn:<br><br>
                         • Tổng hợp & phân tích tình trạng booking<br>
                         • Gợi ý confirm hoặc decline booking<br>
                         • Phân tích khung giờ cao điểm<br>
@@ -514,19 +340,17 @@
                     </div>
                 </div>
             </div>
-
             <div class="ai-input-area">
                 <input type="text" id="aiInput" placeholder="Hỏi về booking, lịch làm việc, doanh thu..." onkeydown="if(event.key==='Enter' && !event.shiftKey) sendAIMessage()">
                 <button id="aiSendBtn" onclick="sendAIMessage()">Gửi ↗</button>
             </div>
         </div>
 
-        <!-- STATS + BOOKINGS -->
+        <!-- DASHBOARD -->
         <div class="section">
             <h3>Booking Dashboard</h3>
             <div id="bookingStats" class="booking-stats"></div>
             <div id="adminPanelNotification"></div>
-
             <div class="kanban-filters">
                 <input type="text" id="kanbanSearch" placeholder="🔍 Tìm tên hoặc số điện thoại..." class="kanban-filter-input" onkeyup="filterKanban()">
                 <select id="kanbanDateFilter" class="kanban-filter-select" onchange="filterKanban()">
@@ -536,7 +360,6 @@
                     <option value="week">This Week</option>
                 </select>
             </div>
-
             <div class="kanban-container">
                 <div class="kanban-column">
                     <div class="kanban-header">⏳ Pending <span class="kanban-count" id="pending-count">0</span></div>
@@ -553,45 +376,27 @@
         <div class="section">
             <h3>Day Off Management</h3>
             <div id="dayOffNotification"></div>
-            <div class="form-group">
-                <label>Mark Day Off:</label>
-                <input type="date" id="dayOffDate">
-            </div>
+            <div class="form-group"><label>Mark Day Off:</label><input type="date" id="dayOffDate"></div>
             <button class="btn" onclick="toggleDayOff()">Toggle Day Off</button>
             <div id="dayOffList" style="margin-top:14px"></div>
         </div>
 
-        <!-- FIREBASE STATUS + SUPABASE MIGRATION NOTE -->
+        <!-- SYNC & SETTINGS -->
         <div class="section">
             <h3>Sync & Settings</h3>
-            <div style="background:#fff3cd;padding:13px;border-radius:8px;margin-bottom:14px;border-left:4px solid #ffc107;">
-                <h4 style="margin:0 0 8px;color:#856404">🔥 Firebase Status</h4>
-                <p style="margin:0;font-size:13px;color:#856404"><strong>Status:</strong> <span id="firebaseStatus">Connecting...</span></p>
+            <div style="background:#e8f5e9;padding:13px;border-radius:8px;margin-bottom:14px;border-left:4px solid #27ae60;">
+                <h4 style="margin:0 0 8px;color:#1b5e20">⚡ Supabase Status</h4>
+                <p style="margin:0;font-size:13px;color:#1b5e20"><strong>Status:</strong> <span id="dbStatus">Connecting...</span></p>
             </div>
-
-            <div class="migration-note">
-                <h4>🚀 Muốn chuyển sang Supabase? (Free plan hoàn toàn khả thi!)</h4>
-                <ol>
-                    <li>Tạo project tại <strong>supabase.com</strong> (free: 500MB DB, 2GB bandwidth)</li>
-                    <li>Tạo table <code>bookings</code> với cột: <code>id, date, time, customer_name, customer_phone, service_request, status, timestamp</code></li>
-                    <li>Tạo table <code>days_off</code> với cột: <code>date</code></li>
-                    <li>Lấy <code>SUPABASE_URL</code> và <code>SUPABASE_ANON_KEY</code> từ Settings → API</li>
-                    <li>Thay thế Firebase SDK bằng: <code>import { createClient } from '@supabase/supabase-js'</code></li>
-                    <li>Đổi <code>db.collection().get()</code> → <code>supabase.from('bookings').select('*')</code></li>
-                    <li>Auth: dùng <code>supabase.auth.signInWithPassword()</code> thay <code>auth.signInWithEmailAndPassword()</code></li>
-                </ol>
-            </div>
-
             <div style="margin-bottom:12px;font-size:0.9em;color:#555">
                 <strong>Last Sync:</strong> <span id="lastSyncTime">Never</span> &nbsp;|&nbsp;
                 <strong>Stored Dates:</strong> <span id="storedDates">0</span>
             </div>
             <button class="btn" onclick="testConnection()" style="background:#2ecc71">Test Sync</button>
             <button class="btn" onclick="manualSync()" style="background:#3498db;margin-left:8px">Force Sync</button>
-            <button class="btn" onclick="clearLocalData()" style="background:#e74c3c;margin-left:8px">Clear Data</button>
+            <button class="btn" onclick="clearAllData()" style="background:#e74c3c;margin-left:8px">Clear Data</button>
             <div id="sheetsNotification" style="margin-top:10px"></div>
         </div>
-
     </div>
 </div>
 
@@ -602,65 +407,52 @@
 const EMAILJS_PUBLIC_KEY  = 'oYiYurSHKpgD-7-o-';
 const EMAILJS_SERVICE_ID  = 'service_y30gvki';
 const EMAILJS_TEMPLATE_ID = 'template_vag0nc9';
-
-const emailJSReady = (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY' && EMAILJS_SERVICE_ID !== 'YOUR_SERVICE_ID' && EMAILJS_TEMPLATE_ID !== 'YOUR_TEMPLATE_ID');
+const emailJSReady = (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY');
 if (emailJSReady) emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
 // ============================================================
-// 🤖  Google Gemini API Config (FREE tier — 1500 req/ngày)
-//     HƯỚNG DẪN: Thay YOUR_KEY_HERE bằng Gemini API key của bạn
-//     Lấy key miễn phí tại: https://aistudio.google.com/apikey
-//     ⚠️ CHỈ dùng trên môi trường private/localhost, không expose public!
+// ⚡ Supabase Config
 // ============================================================
-const GEMINI_API_KEY = '';
+const SUPABASE_URL = 'https://ttvsurwihjahndeeoefm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0dnN1cndpaGphaG5kZWVvZWZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MzEyNDEsImV4cCI6MjA5NDQwNzI0MX0.1uhUGDZAcaF_QAi4O3cWPbbUbd8njFP4etV9-4r0Otc';
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
-// Firebase configuration
+// 🤖 Cloudflare Worker Proxy URL (Mistral AI)
 // ============================================================
-const firebaseConfig = {
-    apiKey: "AIzaSyCDg8kLnX-tVVaNEdVAoC08pidRtnooKmA",
-    authDomain: "rbk2-ff080.firebaseapp.com",
-    projectId: "rbk2-ff080",
-    storageBucket: "rbk2-ff080.firebasestorage.app",
-    messagingSenderId: "643150919684",
-    appId: "1:643150919684:web:a58033154848365c3bdd51"
-};
-
-let db, auth, firebaseInitialized = false;
-try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    auth = firebase.auth();
-    firebaseInitialized = true;
-    document.getElementById('firebaseStatus').textContent = 'Connected ✅';
-    document.getElementById('firebaseStatus').style.color = '#27ae60';
-} catch(e) {
-    document.getElementById('firebaseStatus').textContent = 'Error - Check config';
-    document.getElementById('firebaseStatus').style.color = '#e74c3c';
-}
+const WORKER_URL = 'https://little-smoke-5536.congkhanh12-em.workers.dev/';
 
 const STORAGE_KEY = 'rideBookcutBookings';
 let bookingsData = {}, daysOffData = [];
 let selectedDate = '', selectedTime = '';
 let isAdminLoggedIn = false;
+let currentUser = null;
 let aiChatHistory = [];
 
-function safeDocId(date, time) { return `${date}_${time.replace(':','-')}`; }
+// ============================================================
+// Init & Auth
+// ============================================================
+document.getElementById('dbStatus').textContent = 'Supabase Connected ✅';
+document.getElementById('dbStatus').style.color = '#27ae60';
 
-if (firebaseInitialized) {
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            isAdminLoggedIn = true;
-            const emailEl = document.getElementById('loggedInEmail');
-            if (emailEl) emailEl.textContent = user.email;
-            if (!document.getElementById('adminView').classList.contains('hidden')) {
-                document.getElementById('adminLogin').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                loadAdminBookings(); loadDayOffList(); updateDisplay();
-            }
-        } else { isAdminLoggedIn = false; }
-    });
-}
+db.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+        currentUser = session.user;
+        isAdminLoggedIn = true;
+        const emailEl = document.getElementById('loggedInEmail');
+        if (emailEl) emailEl.textContent = session.user.email;
+        if (!document.getElementById('adminView').classList.contains('hidden')) {
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            loadFromStorage().then(() => { loadAdminBookings(); loadDayOffList(); updateDisplay(); });
+        }
+    } else {
+        isAdminLoggedIn = false;
+        currentUser = null;
+    }
+});
 
 function showNotification(id, msg, type='info') {
     const el = document.getElementById(id);
@@ -678,22 +470,30 @@ window.onload = async function() {
     loadTimeSlots();
 };
 
+// ============================================================
+// Storage — Supabase
+// ============================================================
 async function loadFromStorage() {
-    if (firebaseInitialized) {
-        try {
-            const snap = await db.collection('bookings').get();
-            bookingsData = {};
-            snap.forEach(doc => {
-                const d = doc.data();
-                if (!bookingsData[d.date]) bookingsData[d.date] = {};
-                bookingsData[d.date][d.time] = d;
-            });
-            const dSnap = await db.collection('daysOff').get();
-            daysOffData = [];
-            dSnap.forEach(doc => daysOffData.push(doc.id));
-            saveToLocalStorage();
-        } catch(e) { loadFromLocalStorage(); }
-    } else { loadFromLocalStorage(); }
+    try {
+        const { data: bData, error: bErr } = await db.from('bookings').select('*');
+        if (bErr) throw bErr;
+        bookingsData = {};
+        (bData || []).forEach(b => {
+            if (!bookingsData[b.date]) bookingsData[b.date] = {};
+            bookingsData[b.date][b.time] = {
+                id: b.id, date: b.date, time: b.time,
+                customerName: b.customer_name, customerPhone: b.customer_phone,
+                serviceRequest: b.service_request, status: b.status, timestamp: b.timestamp
+            };
+        });
+        const { data: dData, error: dErr } = await db.from('days_off').select('date');
+        if (dErr) throw dErr;
+        daysOffData = (dData || []).map(r => r.date);
+        saveToLocalStorage();
+    } catch(e) {
+        console.warn('Supabase load failed, using localStorage:', e.message);
+        loadFromLocalStorage();
+    }
 }
 
 function loadFromLocalStorage() {
@@ -703,22 +503,23 @@ function loadFromLocalStorage() {
     if (d) daysOffData = JSON.parse(d);
 }
 
-async function saveToStorage() {
-    if (firebaseInitialized) {
-        try {
-            const batch = db.batch();
-            Object.keys(bookingsData).forEach(date => {
-                Object.keys(bookingsData[date]).forEach(time => {
-                    const ref = db.collection('bookings').doc(safeDocId(date, time));
-                    batch.set(ref, bookingsData[date][time]);
-                });
-            });
-            daysOffData.forEach(date => batch.set(db.collection('daysOff').doc(date), { date }));
-            await batch.commit();
-            saveToLocalStorage();
-        } catch(e) { saveToLocalStorage(); }
-    } else { saveToLocalStorage(); }
-    updateDisplay();
+async function saveBookingToSupabase(booking) {
+    const { error } = await db.from('bookings').upsert({
+        id: booking.id, date: booking.date, time: booking.time,
+        customer_name: booking.customerName, customer_phone: booking.customerPhone,
+        service_request: booking.serviceRequest, status: booking.status, timestamp: booking.timestamp
+    }, { onConflict: 'id' });
+    if (error) throw error;
+}
+
+async function deleteBookingFromSupabase(bookingId) {
+    const { error } = await db.from('bookings').delete().eq('id', bookingId);
+    if (error) throw error;
+}
+
+async function updateBookingStatusInSupabase(bookingId, newStatus) {
+    const { error } = await db.from('bookings').update({ status: newStatus }).eq('id', bookingId);
+    if (error) throw error;
 }
 
 function saveToLocalStorage() {
@@ -734,6 +535,9 @@ function updateDisplay() {
     if (isAdminLoggedIn) loadAdminBookings();
 }
 
+// ============================================================
+// Time Slots
+// ============================================================
 function generateTimeSlots() {
     const slots = [];
     for (let h = 9; h < 19; h++) for (let m = 0; m < 60; m += 30)
@@ -781,17 +585,42 @@ function selectTimeSlot(time, el) {
     document.getElementById('bookingForm').classList.remove('hidden');
 }
 
+// ============================================================
+// Booking Submit
+// ============================================================
 async function submitBooking() {
     const name = document.getElementById('customerName').value.trim();
     const phone = document.getElementById('customerPhone').value.trim();
     const service = document.getElementById('serviceRequest').value.trim();
     if (!name || !phone || !service || !selectedTime) { showNotification('customerNotification','⚠️ Please fill in all fields and select a time slot.','error'); return; }
     if (daysOffData.includes(selectedDate)) { showNotification('customerNotification','🚫 Sorry, this date is marked as day off.','error'); return; }
-    const booking = { id: 'BK'+Date.now(), date: selectedDate, time: selectedTime, customerName: name, customerPhone: phone, serviceRequest: service, status: 'pending', timestamp: new Date().toISOString() };
+
+    const booking = {
+        id: 'BK'+Date.now(), date: selectedDate, time: selectedTime,
+        customerName: name, customerPhone: phone, serviceRequest: service,
+        status: 'pending', timestamp: new Date().toISOString()
+    };
+
     if (!bookingsData[selectedDate]) bookingsData[selectedDate] = {};
     bookingsData[selectedDate][selectedTime] = booking;
-    await saveToStorage();
-    if (emailJSReady) { try { await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { booking_id: booking.id, customer_name: booking.customerName, customer_phone: booking.customerPhone, service_request: booking.serviceRequest, booking_date: booking.date, booking_time: booking.time }); } catch(e) {} }
+
+    try {
+        await saveBookingToSupabase(booking);
+    } catch(e) {
+        console.warn('Supabase save failed:', e.message);
+    }
+    saveToLocalStorage();
+
+    if (emailJSReady) {
+        try {
+            await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                booking_id: booking.id, customer_name: booking.customerName,
+                customer_phone: booking.customerPhone, service_request: booking.serviceRequest,
+                booking_date: booking.date, booking_time: booking.time
+            });
+        } catch(e) {}
+    }
+
     document.getElementById('customerName').value = '';
     document.getElementById('customerPhone').value = '';
     document.getElementById('serviceRequest').value = '';
@@ -806,6 +635,9 @@ function cancelCustomerBooking() {
     selectedTime = '';
 }
 
+// ============================================================
+// View Switching
+// ============================================================
 function showCustomerView() {
     document.getElementById('customerView').classList.remove('hidden');
     document.getElementById('adminView').classList.add('hidden');
@@ -829,14 +661,19 @@ function showAdminView() {
     }
 }
 
+// ============================================================
+// Auth
+// ============================================================
 async function adminLogin() {
     const email = document.getElementById('adminEmail').value.trim();
     const password = document.getElementById('adminPasswordField').value.trim();
     if (!email || !password) { showNotification('adminNotification','⚠️ Vui lòng nhập email và mật khẩu.','error'); return; }
     try {
-        const cred = await auth.signInWithEmailAndPassword(email, password);
+        const { data, error } = await db.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        currentUser = data.user;
         isAdminLoggedIn = true;
-        document.getElementById('loggedInEmail').textContent = cred.user.email;
+        document.getElementById('loggedInEmail').textContent = email;
         document.getElementById('adminPasswordField').value = '';
         document.getElementById('adminLogin').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
@@ -850,16 +687,16 @@ async function adminLogin() {
 }
 
 async function adminLogout() {
-    try { await auth.signOut(); } catch(e) {}
-    isAdminLoggedIn = false;
-    aiChatHistory = [];
+    await db.auth.signOut();
+    isAdminLoggedIn = false; currentUser = null; aiChatHistory = [];
     document.getElementById('adminPanel').classList.add('hidden');
     document.getElementById('adminLogin').classList.remove('hidden');
-    document.getElementById('adminEmail').value = 'ridebookcut@gmail.com';
-    document.getElementById('adminPasswordField').value = '';
     showCustomerView();
 }
 
+// ============================================================
+// Admin Bookings
+// ============================================================
 function loadAdminBookings() {
     const all = [];
     Object.keys(bookingsData).forEach(date => {
@@ -921,30 +758,66 @@ function cancelConfirmedBooking(id) { if(confirm('⚠️ Bạn chắc chắn mu�
 
 async function updateBookingStatus(bookingId, newStatus) {
     let found = false;
+    let foundDate, foundTime;
     Object.keys(bookingsData).forEach(date => {
         Object.keys(bookingsData[date]||{}).forEach(time => {
             const b = bookingsData[date][time];
             if (!b || b.id !== bookingId) return;
-            found = true;
-            if (newStatus==='declined'||newStatus==='cancelled') {
-                if (firebaseInitialized) db.collection('bookings').doc(safeDocId(date,time)).delete().catch(()=>{});
-                delete bookingsData[date][time];
-            } else { bookingsData[date][time].status = newStatus; }
+            found = true; foundDate = date; foundTime = time;
         });
     });
     if (!found) return;
-    await saveToStorage();
+
+    try {
+        if (newStatus==='declined' || newStatus==='cancelled') {
+            await deleteBookingFromSupabase(bookingId);
+            delete bookingsData[foundDate][foundTime];
+        } else {
+            await updateBookingStatusInSupabase(bookingId, newStatus);
+            bookingsData[foundDate][foundTime].status = newStatus;
+        }
+    } catch(e) {
+        console.warn('Supabase update failed:', e.message);
+        if (newStatus==='declined' || newStatus==='cancelled') {
+            delete bookingsData[foundDate][foundTime];
+        } else {
+            bookingsData[foundDate][foundTime].status = newStatus;
+        }
+    }
+
+    saveToLocalStorage();
     loadAdminBookings(); loadTimeSlots();
     const msg = newStatus==='confirmed'?'confirmed ✅':newStatus==='cancelled'?'cancelled':'declined ❌';
     showNotification('adminPanelNotification',`Booking ${msg}!`,'success');
 }
 
-function toggleDayOff() {
+// ============================================================
+// Day Off
+// ============================================================
+async function toggleDayOff() {
     const d = document.getElementById('dayOffDate').value;
     if (!d) { showNotification('dayOffNotification','⚠️ Please select a date first.','error'); return; }
     const idx = daysOffData.indexOf(d);
-    if (idx===-1) { daysOffData.push(d); if (bookingsData[d]) delete bookingsData[d]; saveToStorage(); showNotification('dayOffNotification','🚫 Day marked as OFF!','success'); }
-    else { daysOffData.splice(idx,1); saveToStorage(); showNotification('dayOffNotification','✅ Day off removed!','success'); }
+    try {
+        if (idx===-1) {
+            daysOffData.push(d);
+            await db.from('days_off').insert({ date: d });
+            // Remove any bookings on that day
+            if (bookingsData[d]) {
+                const bookingIds = Object.values(bookingsData[d]).map(b => b.id);
+                for (const id of bookingIds) await deleteBookingFromSupabase(id);
+                delete bookingsData[d];
+            }
+            showNotification('dayOffNotification','🚫 Day marked as OFF!','success');
+        } else {
+            daysOffData.splice(idx,1);
+            await db.from('days_off').delete().eq('date', d);
+            showNotification('dayOffNotification','✅ Day off removed!','success');
+        }
+    } catch(e) {
+        console.warn('Day off sync failed:', e.message);
+    }
+    saveToLocalStorage();
     document.getElementById('dayOffDate').value = '';
     loadDayOffList(); loadTimeSlots();
 }
@@ -955,42 +828,61 @@ function loadDayOffList() {
     if (!daysOffData.length) { el.innerHTML = '<p style="color:#666;font-style:italic">No days off scheduled.</p>'; return; }
     el.innerHTML = '<h4>Scheduled Days Off:</h4>' + [...daysOffData].sort().map(date => {
         const s = new Date(date+'T00:00:00').toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;margin:5px 0;background:#f8f9fa;border-radius:5px;border-left:4px solid #e74c3c"><span>🚫 ${s}</span><button class="btn" style="padding:5px 10px;font-size:12px;background:#dc3545" onclick="removeDayOff('${date}')">Remove</button></div>`;
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;margin:5px 0;background:#f8f9fa;border-radius:5px;border-left:4px solid #e74c3c">
+            <span>🚫 ${s}</span>
+            <button class="btn" style="padding:5px 10px;font-size:12px;background:#dc3545" onclick="removeDayOff('${date}')">Remove</button>
+        </div>`;
     }).join('');
 }
 
-function removeDayOff(date) {
+async function removeDayOff(date) {
     const idx = daysOffData.indexOf(date);
-    if (idx>-1) { daysOffData.splice(idx,1); saveToStorage(); showNotification('dayOffNotification','✅ Day off removed!','success'); loadDayOffList(); loadTimeSlots(); }
+    if (idx>-1) {
+        daysOffData.splice(idx,1);
+        try { await db.from('days_off').delete().eq('date', date); } catch(e) {}
+        saveToLocalStorage();
+        showNotification('dayOffNotification','✅ Day off removed!','success');
+        loadDayOffList(); loadTimeSlots();
+    }
 }
 
-function testConnection() {
-    if (firebaseInitialized) showNotification('sheetsNotification','✅ Firebase connection successful!','success');
-    else showNotification('sheetsNotification','⚠️ Firebase not configured. Using localStorage.','info');
+// ============================================================
+// Sync Controls
+// ============================================================
+async function testConnection() {
+    try {
+        const { error } = await db.from('bookings').select('id').limit(1);
+        if (error) throw error;
+        showNotification('sheetsNotification','✅ Supabase connection successful!','success');
+    } catch(e) {
+        showNotification('sheetsNotification','❌ Supabase error: ' + e.message,'error');
+    }
 }
 
 async function manualSync() {
     await loadFromStorage(); loadTimeSlots();
     if (isAdminLoggedIn) { loadAdminBookings(); loadDayOffList(); }
-    updateDisplay(); showNotification('sheetsNotification','✅ Manual sync completed!','success');
+    updateDisplay();
+    showNotification('sheetsNotification','✅ Manual sync completed!','success');
 }
 
-function clearLocalData() {
+async function clearAllData() {
     if (!confirm('⚠️ Bạn chắc chắn muốn xóa TẤT CẢ dữ liệu? Không thể hoàn tác!')) return;
-    bookingsData = {}; daysOffData = [];
-    if (firebaseInitialized) {
-        db.collection('bookings').get().then(s => { const b=db.batch(); s.forEach(d=>b.delete(d.ref)); return b.commit(); })
-        .then(()=>db.collection('daysOff').get()).then(s=>{ const b=db.batch(); s.forEach(d=>b.delete(d.ref)); return b.commit(); })
-        .then(()=>showNotification('sheetsNotification','✅ All Firebase data cleared!','success'))
-        .catch(()=>showNotification('sheetsNotification','❌ Error clearing Firebase data.','error'));
-    } else { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(STORAGE_KEY+'_daysoff'); showNotification('sheetsNotification','✅ Local data cleared!','success'); }
+    try {
+        await db.from('bookings').delete().neq('id', '');
+        await db.from('days_off').delete().neq('date', '');
+        bookingsData = {}; daysOffData = [];
+        saveToLocalStorage();
+        showNotification('sheetsNotification','✅ All data cleared!','success');
+    } catch(e) {
+        showNotification('sheetsNotification','❌ Error: ' + e.message,'error');
+    }
     loadTimeSlots(); if(isAdminLoggedIn){loadAdminBookings();loadDayOffList();} updateDisplay();
 }
 
 // ============================================================
-// 🤖  AI ASSISTANT — GOOGLE GEMINI API INTEGRATION
+// AI Assistant
 // ============================================================
-
 function buildBookingContext() {
     const all = [];
     Object.keys(bookingsData).forEach(date => {
@@ -1001,42 +893,34 @@ function buildBookingContext() {
     });
     const pending = all.filter(b => b.status==='pending');
     const confirmed = all.filter(b => b.status==='confirmed');
-
     const nowVN = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
     const todayStr = nowVN.getFullYear()+'-'+String(nowVN.getMonth()+1).padStart(2,'0')+'-'+String(nowVN.getDate()).padStart(2,'0');
-
     const todayBookings = all.filter(b => b.date === todayStr);
-
     const hourCounts = {};
-    all.forEach(b => {
-        const h = b.time.split(':')[0];
-        hourCounts[h] = (hourCounts[h]||0) + 1;
-    });
+    all.forEach(b => { const h = b.time.split(':')[0]; hourCounts[h] = (hourCounts[h]||0) + 1; });
 
     return `
 === RIDE BOOKCUT — DỮ LIỆU BOOKING THỰC TẾ ===
-Ngày hôm nay: ${todayStr}
-Múi giờ: Asia/Ho_Chi_Minh (Vietnam)
+Ngày hôm nay: ${todayStr} | Múi giờ: Asia/Ho_Chi_Minh
 
 TỔNG QUAN:
 - Tổng số booking: ${all.length}
 - Đang pending: ${pending.length}
 - Đã confirmed: ${confirmed.length}
-- Ngày nghỉ đã đặt: ${daysOffData.join(', ') || 'Không có'}
+- Ngày nghỉ: ${daysOffData.join(', ') || 'Không có'}
 
 BOOKING HÔM NAY (${todayStr}):
-${todayBookings.length === 0 ? 'Không có booking nào hôm nay.' : todayBookings.map(b => `  - ${b.time} | ${b.customerName} | ${b.customerPhone} | ${b.serviceRequest} | ${b.status.toUpperCase()}`).join('\n')}
+${todayBookings.length === 0 ? 'Không có.' : todayBookings.map(b => `  - ${b.time} | ${b.customerName} | ${b.customerPhone} | ${b.serviceRequest} | ${b.status.toUpperCase()}`).join('\n')}
 
-PENDING BOOKINGS (cần xử lý):
-${pending.length === 0 ? 'Không có booking pending.' : pending.map(b => `  - [${b.id}] ${b.date} ${b.time} | ${b.customerName} | ${b.customerPhone} | ${b.serviceRequest}`).join('\n')}
+PENDING BOOKINGS:
+${pending.length === 0 ? 'Không có.' : pending.map(b => `  - [${b.id}] ${b.date} ${b.time} | ${b.customerName} | ${b.customerPhone} | ${b.serviceRequest}`).join('\n')}
 
 CONFIRMED BOOKINGS:
-${confirmed.length === 0 ? 'Không có booking confirmed.' : confirmed.map(b => `  - ${b.date} ${b.time} | ${b.customerName} | ${b.customerPhone} | ${b.serviceRequest}`).join('\n')}
+${confirmed.length === 0 ? 'Không có.' : confirmed.map(b => `  - ${b.date} ${b.time} | ${b.customerName} | ${b.customerPhone} | ${b.serviceRequest}`).join('\n')}
 
-PHÂN TÍCH GIỜ CAO ĐIỂM:
+GIỜ CAO ĐIỂM:
 ${Object.entries(hourCounts).sort((a,b)=>b[1]-a[1]).map(([h,c])=>`  - ${h}:00-${h}:59: ${c} booking`).join('\n') || 'Chưa đủ dữ liệu'}
-=== HẾT DỮ LIỆU ===
-    `.trim();
+=== HẾT ===`.trim();
 }
 
 function appendChatMsg(role, content) {
@@ -1050,23 +934,17 @@ function appendChatMsg(role, content) {
     `;
     chat.appendChild(div);
     chat.scrollTop = chat.scrollHeight;
-    return div;
 }
 
 function showTyping() {
     const chat = document.getElementById('aiChat');
     const div = document.createElement('div');
-    div.className = 'chat-msg assistant';
-    div.id = 'typingIndicator';
+    div.className = 'chat-msg assistant'; div.id = 'typingIndicator';
     div.innerHTML = `<div class="msg-avatar ai-av">✦</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
+    chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
 }
 
-function removeTyping() {
-    const el = document.getElementById('typingIndicator');
-    if (el) el.remove();
-}
+function removeTyping() { const el = document.getElementById('typingIndicator'); if (el) el.remove(); }
 
 async function sendAIMessage() {
     const input = document.getElementById('aiInput');
@@ -1079,27 +957,25 @@ async function sendAIMessage() {
     appendChatMsg('user', msg);
     showTyping();
 
-    const systemPrompt = `Bạn là Tro em anh Ree - AI Assistant của tiệm tóc Ride Bookcut (barbershop). Bạn giúp chủ tiệm quản lý booking, phân tích lịch, đề xuất hành động, và tổng hợp thông tin. Hãy trả lời bằng tiếng Việt, ngắn gọn súc tích, thực tế. Sử dụng emoji phù hợp. Dữ liệu booking thực tế hiện tại:\n\n${buildBookingContext()}`;
+    const systemPrompt = `Bạn là Trợ lý AI của tiệm tóc Ride Bookcut. Bạn giúp chủ tiệm quản lý booking, phân tích lịch, đề xuất hành động. Trả lời bằng tiếng Việt, ngắn gọn, thực tế, dùng emoji phù hợp.\n\n${buildBookingContext()}`;
 
     aiChatHistory.push({ role: 'user', content: msg });
 
-    const geminiMessages = aiChatHistory.map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }]
-    }));
-
     try {
-    const res = await fetch('https://little-smoke-5536.congkhanh12-em.workers.dev/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        system_instruction: { parts: [{ text: systemPrompt }] },
-        contents: geminiMessages,
-        generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
-    })
-});
+        const res = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                system_instruction: { parts: [{ text: systemPrompt }] },
+                contents: aiChatHistory.map(m => ({
+                    role: m.role === 'assistant' ? 'model' : 'user',
+                    parts: [{ text: m.content }]
+                })),
+                generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
+            })
+        });
+
         const data = await res.json();
-        console.log('Gemini response:', JSON.stringify(data));
         removeTyping();
 
         if (data.candidates && data.candidates[0]?.content?.parts[0]) {
@@ -1108,11 +984,11 @@ async function sendAIMessage() {
             if (aiChatHistory.length > 20) aiChatHistory = aiChatHistory.slice(-18);
             appendChatMsg('assistant', reply);
         } else if (data.error) {
-            appendChatMsg('assistant', `❌ Lỗi API: ${data.error.message}`);
+            appendChatMsg('assistant', `❌ Lỗi: ${data.error.message}`);
         }
     } catch(e) {
         removeTyping();
-        appendChatMsg('assistant', `❌ Không kết nối được API: ${e.message}`);
+        appendChatMsg('assistant', `❌ Không kết nối được: ${e.message}`);
     }
 
     btn.disabled = false;
@@ -1120,8 +996,7 @@ async function sendAIMessage() {
 }
 
 function sendQuickPrompt(prompt) {
-    const input = document.getElementById('aiInput');
-    input.value = prompt;
+    document.getElementById('aiInput').value = prompt;
     sendAIMessage();
 }
 </script>
